@@ -1,0 +1,18 @@
+{
+  "users": {
+    "aboutTable": "Пользователи системы",
+    "columns": {
+      "id": {
+        "type": "number",
+        "editable": false
+      },
+      "login": {
+        "type": "text"
+      },
+      "aboutUser": {
+        "type": "textarea",
+        "aboutColumn": "Уточняющая информация о пользователе"
+      }
+    }
+  }
+}
