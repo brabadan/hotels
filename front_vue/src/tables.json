@@ -1,18 +1,94 @@
-{
-  "users": {
+[
+  {
     "aboutTable": "Пользователи системы",
-    "columns": {
-      "id": {
+    "name": "users",
+    "columns": [
+      {
+        "name": "id",
         "type": "number",
         "editable": false
+        },
+      {
+        "name": "created_date",
+        "type": "date"
       },
-      "login": {
+      {
+        "name": "created_user_id",
+        "type": "number"
+      },
+      {
+        "name": "system_rights",
         "type": "text"
       },
-      "aboutUser": {
+      {
+        "name": "login",
+        "type": "text"
+      },
+      {
+        "name": "aboutUser",
         "type": "textarea",
         "aboutColumn": "Уточняющая информация о пользователе"
       }
-    }
+    ]
+  },
+  {
+    "aboutTable": "Отели",
+    "name": "hotels",
+    "columns": [
+      {
+        "name": "id",
+        "type": "number",
+        "editable": false
+      },
+      {
+        "name": "created_date",
+        "type": "date"
+      },
+      {
+        "name": "created_user_id",
+        "type": "number"
+      },
+      {
+        "name": "name",
+        "type": "text"
+      },
+      {
+        "name": "aboutHotel",
+        "type": "textarea",
+        "aboutColumn": "Уточняющая информация об Отеле"
+      }
+    ]
+  },
+  {
+    "aboutTable": "Комнаты отеля",
+    "name": "rooms",
+    "columns": [
+      {
+        "name": "id",
+        "type": "number",
+        "editable": false
+      },
+      {
+        "name": "created_date",
+        "type": "date"
+      },
+      {
+        "name": "created_user_id",
+        "type": "number"
+      },
+      {
+        "name": "hotel_id",
+        "type": "text"
+      },
+      {
+        "name": "room_number",
+        "type": "text"
+      },
+      {
+        "name": "aboutRoom",
+        "type": "textarea",
+        "aboutColumn": "Уточняющая информация о комнате"
+      }
+    ]
   }
-}
+]

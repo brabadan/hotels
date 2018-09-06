@@ -8,37 +8,11 @@
                     class="app-main-side"
         >
         </AppMainSide>
-        <label>
-            Введите новый отель:
-            <input type="text"
-                   placeholder="название отеля"
-                   @keyup.enter="onEnterHotel"
-            />
-        </label>
+        <ViewTableList class="app-main-view-tables"
+        />
         <table>
-            <caption>Список отелей</caption>
-            <thead>
-                <tr>
-                    <th>№</th>
-                    <th>Название</th>
-                </tr>
-            </thead>
-            <tr v-for="(hotel, index) in hotelsList"
-                :key="index"
-            >
-                <td>{{ index + 1 }}</td>
-                <td>{{ hotel }}</td>
-            </tr>
+            <ViewTablePage />
         </table>
-        <ul v-if="tableList">
-            <li v-for="(column, index) in Object.keys(tableList.users.columns)"
-                v-bind:key="index"
-            >
-                {{ column }}
-            </li>
-        </ul>
-        <b v-else>Нет объекта :(</b>
-        {{ tableList }}
     </div>
 </template>
 
@@ -46,6 +20,8 @@
 import { mapState, mapGetters } from 'vuex'
 import AppMainHeader from '@/components/AppMainHeader.vue'
 import AppMainSide from '@/components/AppMainSide.vue'
+import ViewTablePage from '@/components/ViewTablePage'
+import ViewTableList from './ViewTableList'
 
 export default {
   name: 'HotelsMain',
@@ -56,19 +32,15 @@ export default {
   },
   computed: {
     ...mapState([
-      'hotelsList',
       'links'
     ]),
     ...mapGetters([
       'tableList'
     ])
   },
-  methods: {
-    onEnterHotel (e) {
-      this.$store.dispatch('addHotel', e.target.value)
-    }
-  },
   components: {
+    ViewTableList,
+    ViewTablePage,
     AppMainHeader,
     AppMainSide
   }
@@ -81,7 +53,7 @@ export default {
     width 100%
     height 8%
     background-color darkgrey
-.app-main-side
+.app-main-side, .app-main-view-tables
     width 20%
     display block
     float left
