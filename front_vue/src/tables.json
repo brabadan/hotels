@@ -6,28 +6,30 @@
       {
         "name": "id",
         "type": "number",
-        "editable": false
+        "readonly": true
         },
       {
         "name": "created_date",
-        "type": "date"
+        "type": "date",
+        "readonly": true
       },
       {
         "name": "created_user_id",
-        "type": "number"
-      },
-      {
-        "name": "system_rights",
-        "type": "text"
+        "type": "number",
+        "readonly": true
       },
       {
         "name": "login",
         "type": "text"
       },
       {
-        "name": "aboutUser",
+        "name": "system_rights",
+        "type": "text"
+      },
+      {
+        "name": "about_user",
         "type": "textarea",
-        "aboutColumn": "Уточняющая информация о пользователе"
+        "about_column": "Уточняющая информация о пользователе"
       }
     ]
   },
@@ -38,24 +40,26 @@
       {
         "name": "id",
         "type": "number",
-        "editable": false
+        "readonly": true
       },
       {
         "name": "created_date",
-        "type": "date"
+        "type": "date",
+        "readonly": true
       },
       {
         "name": "created_user_id",
-        "type": "number"
+        "type": "number",
+        "readonly": true
       },
       {
         "name": "name",
         "type": "text"
       },
       {
-        "name": "aboutHotel",
+        "name": "about_hotel",
         "type": "textarea",
-        "aboutColumn": "Уточняющая информация об Отеле"
+        "about-column": "Уточняющая информация об Отеле"
       }
     ]
   },
@@ -66,28 +70,35 @@
       {
         "name": "id",
         "type": "number",
-        "editable": false
+        "readonly": true
       },
       {
         "name": "created_date",
-        "type": "date"
+        "type": "date",
+        "readonly": true
       },
       {
         "name": "created_user_id",
-        "type": "number"
+        "type": "number",
+        "readonly": true
       },
       {
         "name": "hotel_id",
-        "type": "text"
+        "type": "number",
+        "link": {
+          "table": "hotels",
+          "columnForSave": "id",
+          "columnForList": "name"
+        }
       },
       {
         "name": "room_number",
         "type": "text"
       },
       {
-        "name": "aboutRoom",
+        "name": "about_room",
         "type": "textarea",
-        "aboutColumn": "Уточняющая информация о комнате"
+        "about_column": "Уточняющая информация о комнате"
       }
     ]
   }

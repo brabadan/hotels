@@ -4,7 +4,7 @@
             <strong>Список таблиц:</strong>
         </div>
         <ul>
-            <li v-for="(table, index) in tableList"
+            <li v-for="(table, index) in getTableList"
                 v-bind:key="index"
                 v-bind:class="[index == getCurrentTableNum ? 'selected' : '']"
                 v-on:click="onSelectTable"
@@ -23,7 +23,7 @@ export default {
   name: 'ViewTableList',
   computed: {
     ...mapGetters([
-      'tableList',
+      'getTableList',
       'getCurrentTableNum'
     ])
   },

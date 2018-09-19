@@ -8,11 +8,9 @@
                     class="app-main-side"
         >
         </AppMainSide>
-        <ViewTableList class="app-main-view-tables"
+        <ViewTableList class="app-main-view-table-list"
         />
-        <table>
-            <ViewTablePage />
-        </table>
+        <ViewTable class="app-main-view-table" />
     </div>
 </template>
 
@@ -20,8 +18,8 @@
 import { mapState, mapGetters } from 'vuex'
 import AppMainHeader from '@/components/AppMainHeader.vue'
 import AppMainSide from '@/components/AppMainSide.vue'
-import ViewTablePage from '@/components/ViewTablePage'
 import ViewTableList from './ViewTableList'
+import ViewTable from '@/components/ViewTable'
 
 export default {
   name: 'HotelsMain',
@@ -40,7 +38,7 @@ export default {
   },
   components: {
     ViewTableList,
-    ViewTablePage,
+    ViewTable,
     AppMainHeader,
     AppMainSide
   }
@@ -53,11 +51,12 @@ export default {
     width 100%
     height 8%
     background-color darkgrey
-.app-main-side, .app-main-view-tables
+.app-main-side, .app-main-view-table-list
     width 20%
     display block
     float left
     border aqua 1px solid
+    margin 0.3em
 table
     margin-left auto
     margin-right auto

@@ -5,8 +5,11 @@ import store from './store'
 
 Vue.config.productionTip = false
 
-new Vue({
+let vm = new Vue({
   router,
   store,
   render: h => h(App)
 }).$mount('#app')
+
+vm.$store.state.tableList.forEach(table => { Vue.set(vm.$store.state.newRow, table.name, {}) })
+vm.$store.dispatch('selectTable', 0)
