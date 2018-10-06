@@ -18,8 +18,9 @@
 import { mapState, mapGetters } from 'vuex'
 import AppMainHeader from '@/components/AppMainHeader.vue'
 import AppMainSide from '@/components/AppMainSide.vue'
-import ViewTableList from './ViewTableList'
+import ViewTableList from '@/components/ViewTableList'
 import ViewTable from '@/components/ViewTable'
+import StatusBar from '@/components/StatusBar'
 
 export default {
   name: 'HotelsMain',
@@ -40,7 +41,8 @@ export default {
     ViewTableList,
     ViewTable,
     AppMainHeader,
-    AppMainSide
+    AppMainSide,
+    StatusBar
   }
 }
 

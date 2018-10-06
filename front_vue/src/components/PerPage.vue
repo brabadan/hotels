@@ -23,7 +23,11 @@ export default {
   },
   methods: {
     onChangePerPage: function () {
-      this.$store.dispatch('onChangePerPage', this.perPage)
+      if (this.perPage >= 1) {
+        this.$store.dispatch('onChangePerPage', this.perPage)
+      } else {
+        this.perPage = 1
+      }
     }
   }
 }

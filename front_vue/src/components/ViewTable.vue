@@ -8,6 +8,7 @@
             </caption>
             <thead>
                 <tr>
+                    <th>№</th>
                     <th v-for="(column, index) in getCurrentTable.columns"
                         v-bind:key="index"
                     >

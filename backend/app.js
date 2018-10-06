@@ -1,9 +1,19 @@
-var http = require("http");
-http.createServer(function(request,response){
+const express = require('express');
+const MongoClient = require('mongodb').MongoClient;
+const app = express();
+const config = require('./config/index');
 
-    response.end("Hello NodeJS!");
+require('./middleware')(app, express);
 
-}).listen(3000, "127.0.0.1",function(){
-    var a = 'kuku';
-    console.log("Сервер начал прослушивание запросов на порту 3000");
+MongoClient.connect(config.db.url, { useNewUrlParser: true }, (err, client) => {
+    if (err) return console.error(err);
+
+    const db = client.db('hotels');
+    // Включаем Аутентификацию
+    require('./middleware/Auth')(app, db);
+
+    require('./app/routes')(app, db);
+    app.listen(config.port, () => {
+        console.log(new Date(), `listening on ${config.port} port`);
+    });
 });

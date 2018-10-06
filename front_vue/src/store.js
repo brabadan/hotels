@@ -1,17 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import request from './request'
 
 Vue.use(Vuex)
 
-const tables = require('./tables.json')
-let LSTableRows = localStorage.getItem('tableRows')
-LSTableRows = LSTableRows ? JSON.parse(LSTableRows) : {}
-
 export default new Vuex.Store({
   state: {
-    hotelsList: ['first', 'second', 'third'],
+    serverURL: 'http://localhost:3000/',
+    username: '',
     links: [{ name: 'Конфигурация' }, { name: 'Работаем с отелем' }],
-    tableList: tables,
+    tableList: [],
     currentTable: {
       num: null,
       name: '',
@@ -22,8 +20,11 @@ export default new Vuex.Store({
       rows: [],
       length: 0
     },
+    statusBar: {
+      text: 'statusBar',
+      hidden: false
+    },
     currentTableNum: 0,
-    tableRows: LSTableRows,
     currentUser: 0,
     newRow: {}
   },
@@ -40,35 +41,50 @@ export default new Vuex.Store({
     getCurrentTable: (state) => {
       return state.currentTable
     },
-    getCurrentTableName: (state) => {
-      return state.currentTable.name
-    },
     getCurrentTableRows: (state) => {
       return state.currentTable.rows
     },
-    getLinkedField (state) {
-      return function (column, row) {
-        const tableName = column.link.table
-        const columnForList = column.link.columnForList
-        const columnForFind = column.link.columnForSave
-        for (let r of state.tableRows[tableName]) {
-          if (String(r[columnForFind]) === String(row[column.name])) {
-            return r[columnForList]
-          }
-        }
-        return 'not found'
-      }
-    },
-    getLinkedList (state) {
-      return function (column) {
-        const tableName = column.link.table
-        const columnForList = column.link.columnForList
-        const columnForFind = column.link.columnForSave
-        return state.tableRows[tableName].map(row => ({ key: row[columnForFind], value: row[columnForList] }))
-      }
+    getNewRow: (state) => {
+      return state.newRow[state.currentTable.name]
     }
   },
   mutations: {
+    checkLogin (state) {
+      request('GET', '/login')
+        .then(result => {
+          if (result.res) state.username = result.res
+        })
+        .catch(e => {
+          state.statusBar.text = `Ошибка проверки подключение: ${e}`
+        })
+    },
+    logout (state) {
+      request('POST', '/logout')
+      state.username = null
+      state.currentTable.rows = []
+    },
+    login (state, user) {
+      if (!user.username || !user.password) {
+        state.statusBar.text = 'Имя пользователя и пароль должны быть заполнены!!!'
+      } else {
+        request('POST', '/login', user)
+          .then(result => {
+            if (result.res && result.res.username) {
+              state.statusBar.text = `Успешная авториация: ${result.res.username}`
+              state.username = result.res.username
+              this.dispatch('selectTable', state.currentTable.num)
+            } else {
+              state.statusBar.text = `Неизвестный ответ: ${result}`
+            }
+          })
+          .catch(e => {
+            state.statusBar.text = `Ошибка аутентификации: ${e}`
+          })
+      }
+    },
+    showStatusBar (state, text) {
+      state.statusBar = { text, hidden: false }
+    },
     addHotel (state, hotelName) {
       state.hotelsList.push(hotelName)
     },
@@ -77,29 +93,66 @@ export default new Vuex.Store({
       state.currentTableNum = num
       const name = state.tableList[num].name
       const columns = state.tableList[num].columns
-      // Если у таблицы нет записей - создаем пустой массив
-      if (!state.tableRows[name]) {
-        Vue.set(state.tableRows, name, [])
+      state.currentTable = { ...state.currentTable, num, name, curPage: 1, columns }
+      let requests = []
+      for (let i = 0; i < columns.length; i++) {
+        if (columns[i].link) {
+          let newReq = request('GET', state.serverURL + columns[i].link.table + '/toarray')
+            .then(res => {
+              if (res.result && res.result instanceof Array) {
+                const linkedList = res.result.map(r => (
+                  { key: r[columns[i].link.columnForSave], value: r[columns[i].link.columnForList] }
+                ))
+                Vue.set(state.currentTable.columns[i], 'linkList', linkedList)
+              }
+            })
+          requests.push(newReq)
+        }
       }
-      const length = state.tableRows[name].length
-      const maxPage = Math.ceil(length / state.currentTable.perPage)
-      state.currentTable = { ...state.currentTable, num, name, length, curPage: 1, maxPage, columns }
-      this.dispatch('selectPage', 1)
+      if (requests.length > 0) {
+        Promise.all(requests)
+          .then(this.dispatch('selectPage', 1))
+          .catch(err => {
+            this.state.statusBar.text = 'error when load linkList: ' + err
+          })
+      } else {
+        this.dispatch('selectPage', 1)
+      }
     },
     selectPage (state, page) {
-      let rows = state.tableRows[state.currentTable.name]
-      const from = state.currentTable.perPage * (page - 1)
-      const to = Math.min(rows.length, from + state.currentTable.perPage)
-      state.currentTable.rows = rows.slice(from, to)
-      state.currentTable.curPage = +page
+      state.statusBar.text = `Loading page ${page} data...`
+      const { name, perPage } = state.currentTable
+      request('GET', state.serverURL + name + '/page/' + page + '/perpage/' + perPage)
+        .then(res => {
+          if (res.err) {
+            state.statusBar.text = res
+          } else {
+            state.currentTable.rows = res.result
+            state.currentTable.curPage = +page
+            state.statusBar.text = `page ${page} loaded successfull`
+            this.dispatch('countTableLength')
+          }
+        })
+        .catch(error => {
+          state.statusBar.text = `error: ${error} when loading page ${page}`
+        })
+    },
+    countTableLength (state) {
+      const name = state.currentTable.name
+      request('GET', state.serverURL + name + '/count')
+        .then(res => {
+          state.currentTable.length = res.result
+          state.currentTable.maxPage = Math.ceil(res.result / state.currentTable.perPage)
+          state.statusBar.text = res
+        })
     },
     onEditRow (state, id) {
-      const table = state.tableList[state.currentTableNum]
-      state.tableRows[table.name].forEach((row, index) => {
-        if (+row.id === +id) {
-          Object.keys(row).forEach(key => {
-            Vue.set(state.newRow[table.name], key, row[key])
+      state.currentTable.rows.forEach((row, index) => {
+        if (row._id === id) {
+          state.currentTable.columns.forEach(column => {
+            Vue.set(state.newRow[state.currentTable.name], column.name, row[column.name])
           })
+          Vue.set(state.newRow[state.currentTable.name], '_id', row._id)
         }
       })
     },
@@ -131,6 +184,15 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    checkLogin ({ commit }) {
+      commit('checkLogin')
+    },
+    login ({ commit }, user) {
+      commit('login', user)
+    },
+    logout ({ commit }) {
+      commit('logout')
+    },
     addHotel ({ commit }, hotelName) {
       commit('addHotel', hotelName)
     },
@@ -142,6 +204,26 @@ export default new Vuex.Store({
     },
     onEditRow ({ commit, state }, id) {
       commit('onEditRow', id)
+    },
+    putRow ({ commit, state }, row) {
+      const newRow = { ...row, created_date: (new Date()), created_user_id: state.currentUser }
+      request('PUT', state.serverURL + state.currentTable.name + '/' + row._id, newRow)
+        .then((result) => {
+          // commit('putRow', result)
+          commit('selectPage', state.currentTable.curPage)
+          commit('showStatusBar', 'result: ' + result)
+        })
+        .catch(error => commit('showStatusBar', 'error: ' + error))
+    },
+    postRow ({ commit, state }, row) {
+      const table = state.tableList[state.currentTableNum]
+      const newRow = { ...row, created_date: (new Date()), created_user_id: state.currentUser }
+      request('POST', state.serverURL + table.name, newRow)
+        .then((result) => {
+          commit('selectPage', state.currentTable.curPage)
+          commit('showStatusBar', 'result: ' + result.req)
+        })
+        .catch(error => commit('showStatusBar', 'error: ' + error))
     },
     insertRow ({ commit, state }, newRow) {
       const table = state.tableList[state.currentTableNum]
@@ -156,6 +238,9 @@ export default new Vuex.Store({
     },
     onSelectPage ({ commit, state }, page) {
       commit('selectPage', page)
+    },
+    countTableLength ({ commit }) {
+      commit('countTableLength')
     },
     onChangePerPage ({ commit, state }, perPage) {
       commit('onChangePerPage', perPage)

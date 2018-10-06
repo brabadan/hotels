@@ -1,6 +1,7 @@
 <template>
         <tfoot>
             <tr>
+                <td>new:</td>
                 <td v-for="column in getCurrentTable.columns"
                     v-bind:key="column.name"
                 >
@@ -8,9 +9,9 @@
                         {{ getNewRowField(column) }}
                     </span>
                     <select v-else-if="column.link"
-                            v-model="$store.state.newRow[getCurrentTableName][column.name]"
+                            v-model="$store.state.newRow[getCurrentTable.name][column.name]"
                     >
-                        <option v-for="option in getLinkedList(column)"
+                        <option v-for="option in column.linkList"
                                 v-bind:key="option.key"
                                 v-bind:value="option.key"
                                 >
@@ -19,16 +20,16 @@
                     </select>
                     <input v-else-if="column.type !== 'textarea'"
                            v-bind:type="column.type"
-                           v-model="$store.state.newRow[getCurrentTableName][column.name]"
+                           v-model="$store.state.newRow[getCurrentTable.name][column.name]"
                            v-bind:title="column.about_column ? column.about_column : column.name"
                 />
                     <textarea v-else
-                              v-model="$store.state.newRow[getCurrentTableName][column.name]"
+                              v-model="$store.state.newRow[getCurrentTable.name][column.name]"
                               v-bind:title="column.about_column ? column.about_column : column.name"
                     ></textarea>
                 </td>
                 <td>
-                    <button v-on:click="insertRow">
+                    <button v-on:click="rowPutPost">
                         Сохр.
                     </button>
                     <button v-on:click="clearNewRow">
@@ -46,19 +47,16 @@ export default {
   name: 'ViewTableFooter',
   computed: {
     ...mapGetters([
-      'getTableList',
-      'getCurrentTable',
-      'getCurrentTableName',
-      'getCurrentTableNum',
-      'getLinkedList'
+      'getCurrentTable'
     ])
   },
   methods: {
-    insertRow: function () {
+    rowPutPost: function () {
       const table = this.getCurrentTable
+      const newRow = this.$store.state.newRow[table.name]
       let err = ''
-      table.columns.forEach(column => {
-        if (!column.readonly && !this.$store.state.newRow[table.name][column.name]) {
+      table.columns.forEach(column => { // Проверяем обязательные поля на заполнение
+        if (!column.readonly && !newRow[column.name]) {
           if (!err) err = 'Не заполнено обязательное поле:'
           err += ' ' + column.name
         }
@@ -67,18 +65,41 @@ export default {
         console.log(err)
         return err
       }
-      this.$store.dispatch('insertRow', this.$store.state.newRow[table.name])
+      if (newRow._id) { // Если запись существует - перезаписать
+        this.$store.dispatch('putRow', newRow)
+          .then(this.clearNewRow)
+      } else { // Иначе новая запись
+        this.$store.dispatch('postRow', newRow)
+          .then(this.clearNewRow)
+      }
+    },
+    insertRow: function () {
+      const table = this.getCurrentTable
+      const newRow = this.$store.state.newRow[table.name]
+      let err = ''
+      table.columns.forEach(column => {
+        if (!column.readonly && !newRow[column.name]) {
+          if (!err) err = 'Не заполнено обязательное поле:'
+          err += ' ' + column.name
+        }
+      })
+      if (err) {
+        console.log(err)
+        return err
+      }
+      this.$store.dispatch('insertRow', newRow)
         .then(this.clearNewRow)
     },
     clearNewRow: function () {
+      this.$store.state.newRow[this.getCurrentTable.name]._id = null
       this.getCurrentTable.columns.forEach(column => {
         this.$store.state.newRow[this.getCurrentTable.name][column.name] = null
       })
     },
     getNewRowField: function (column) {
-      if (column.type === 'date' && this.$store.state.newRow[this.getCurrentTableName][column.name]) {
-        return String(this.$store.state.newRow[this.getCurrentTableName][column.name]).slice(0, 10)
-      } else return this.$store.state.newRow[this.getCurrentTableName][column.name]
+      if (column.type === 'date' && this.$store.state.newRow[this.getCurrentTable.name][column.name]) {
+        return String(this.$store.state.newRow[this.getCurrentTable.name][column.name]).slice(0, 10)
+      } else return this.$store.state.newRow[this.getCurrentTable.name][column.name]
     }
   }
 }

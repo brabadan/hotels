@@ -1,16 +1,18 @@
 <template>
     <tbody>
-    <tr v-for="row in getCurrentTable.rows"
-        v-bind:key="row.id"
+    <tr v-for="(row, index) in getCurrentTable.rows"
+        v-bind:key="row._id"
+        v-bind:class="getNewRow._id === row._id ? 'onedit' : ''"
     >
+        <td>{{ index + 1 + (getCurrentTable.curPage -1) * getCurrentTable.perPage }}</td>
         <td v-for="column in getCurrentTable.columns"
-            v-bind:key="row.id + '.' + column.name"
+            v-bind:key="row._id + '.' + column.name"
         >
             {{ getFieldData(column, row) }}
         </td>
         <td>
             <button
-                    v-bind:data-id="row.id"
+                    v-bind:data-id="row._id"
                     v-on:click="onEditRow"
             >
                 Редактировать
@@ -28,7 +30,7 @@ export default {
   computed: {
     ...mapGetters([
       'getCurrentTable',
-      'getLinkedField'
+      'getNewRow'
     ])
   },
   methods: {
@@ -36,11 +38,17 @@ export default {
       this.$store.dispatch('onEditRow', e.target.dataset.id)
     },
     getFieldData: function (column, row) {
-      if (column.link) {
-        return this.getLinkedField(column, row)
+      if (column.link && column.linkList) {
+        for (let link of column.linkList) {
+          if (row[column.name] === link.key) return link.value
+        }
+        return 'not found :('
       } else {
-        if (column.type === 'date') return (row[column.name] + '').slice(0, 10)
-        else return row[column.name]
+        if (column.type === 'date') {
+          return (row[column.name] + '').slice(0, 10)
+        } else {
+          return row[column.name]
+        }
       }
     }
   }
@@ -48,14 +56,20 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-button
-    visibility hidden
-tr:hover
-    background-color antiquewhite
+    tr.onedit, tr.onedit:hover
+        background-color coral
+
     button
-        visibility visible
-tr button:hover
-    cursor pointer
-td
-    border 1px solid
+        visibility hidden
+
+    tr:hover
+        background-color antiquewhite
+        button
+            visibility visible
+
+    tr button:hover
+        cursor pointer
+
+    td
+        border 1px solid
 </style>
