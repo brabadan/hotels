@@ -5,7 +5,7 @@ function collectionProcess(req, res, err, result) {
 
 module.exports = function (app, db) {
     const ObjectID = require('mongodb').ObjectID;
-    const tables = require('../../../tables');
+    const tables = require('../../tables');
 
     for (let table of tables) {
         const collection = table.name.trim();
