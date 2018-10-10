@@ -16,7 +16,7 @@ MongoClient.connect(config.db.url, { useNewUrlParser: true }, (err, client) => {
     require('./middleware/Auth')(app, db);
 
     require('./app/routes')(app, db);
-    app.listen(server_port, server_ip, () => {
+    app.listen(server_port, () => {
         console.log(new Date(), `listening on ${server_port} port, ip = ${server_ip}`);
     });
 });
