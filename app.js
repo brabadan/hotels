@@ -2,6 +2,7 @@ const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const app = express();
 const config = require('./config/index');
+// Для функционирования на OpenShift
 const server_port = process.env.OPENSHIFT_NODEJS_PORT || config.port;
 const server_ip = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
 
