@@ -6,7 +6,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    serverURL: '/', // http://localhost:3000/',
+    serverURL: '', // http://localhost:3000/',
     username: '',
     links: [{ name: 'Конфигурация' }, { name: 'Работаем с отелем' }],
     tableList: [],

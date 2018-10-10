@@ -17,6 +17,6 @@ MongoClient.connect(config.db.url, { useNewUrlParser: true }, (err, client) => {
 
     require('./app/routes')(app, db);
     app.listen(server_port, () => {
-        console.log(new Date(), `listening on ${server_port} port, ip = ${server_ip}`);
+        console.log(new Date(), `listening on ${server_port} port`);
     });
 });
