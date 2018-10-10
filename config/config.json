@@ -2,7 +2,7 @@
     "db": {
         "url": "mongodb://admin:admin_741852@ds111623.mlab.com:11623/hotels"
     },
-    "port": 3000,
+    "port": 8080,
     "session": {
         "secret": "secretno-tainiy-cod;)",
         "cookie": {
