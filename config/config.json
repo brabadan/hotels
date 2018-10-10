@@ -1,0 +1,14 @@
+{
+    "db": {
+        "url": "mongodb://admin:admin_741852@ds111623.mlab.com:11623/hotels"
+    },
+    "port": 3000,
+    "session": {
+        "secret": "secretno-tainiy-cod;)",
+        "cookie": {
+            "path": "/",
+            "httpOnly": true,
+            "maxAge": null
+        }
+    }
+}
