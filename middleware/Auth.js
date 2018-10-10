@@ -79,7 +79,7 @@ module.exports = function (app, db) {
             console.log(`Forbidden:`);
             console.log(req.url);
             // res.redirect('/login');
-            res.send({err: 403, req: req.body, result: 'Необходимо авторизаваться'});
+            res.send({err: 403, req: req.body, result: 'Необходимо авторизоваться'});
             // next();
         }
     });

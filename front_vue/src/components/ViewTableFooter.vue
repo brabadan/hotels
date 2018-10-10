@@ -30,7 +30,7 @@
                 </td>
                 <td>
                     <button v-on:click="rowPutPost">
-                        Сохр.
+                        {{ buttonName() }}
                     </button>
                     <button v-on:click="clearNewRow">
                         Очист.
@@ -51,6 +51,9 @@ export default {
     ])
   },
   methods: {
+    buttonName: function () {
+      return (this.$store.state.newRow[this.getCurrentTable.name] && this.$store.state.newRow[this.getCurrentTable.name]['_id']) ? 'Изм.' : 'Доб.'
+    },
     rowPutPost: function () {
       const table = this.getCurrentTable
       const newRow = this.$store.state.newRow[table.name]
