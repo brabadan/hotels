@@ -6,11 +6,12 @@ function collectionProcess(req, res, err, result) {
 module.exports = function (app, db) {
     const ObjectID = require('mongodb').ObjectID;
     const tables = require('../../tables');
+    const config = require('../../config/index');
 
     for (let table of tables) {
         const collection = table.name.trim();
         // контроль прав пользователя на таблицу
-        app.all('/' + collection + '*', (req, res, next) => {
+        app.all(config.app_path + collection + '*', (req, res, next) => {
             if (table.rightsRequired && req.session.user.rights.indexOf(table.rightsRequired) < 0) {
                 // Нет необходимых прав
                 res.send({ err: 403, req: req.body, res: 'Нет необходимых прав' });
@@ -18,26 +19,26 @@ module.exports = function (app, db) {
                 next();
             }
         });
-        app.post('/' + collection, (req, res) => {
+        app.post(config.app_path + collection, (req, res) => {
             db.collection(collection).insertOne(req.body, (err, result) => {
                 collectionProcess(req, res, err, result)
             })
         });
-        app.get('/' + collection + '/count', (req, res) => {
+        app.get(config.app_path + collection + '/count', (req, res) => {
             db.collection(collection)
                 .find()
                 .count((err, count) => {
                     collectionProcess(req, res, err, count)
                 })
         });
-        app.get('/' + collection + '/toarray', (req, res) => {
+        app.get(config.app_path + collection + '/toarray', (req, res) => {
             db.collection(collection)
                 .find()
                 .toArray((err, result) => {
                     collectionProcess(req, res, err, result)
                 })
         });
-        app.get('/' + collection + '/page/:page/perpage/:perpage', (req, res) => {
+        app.get(config.app_path + collection + '/page/:page/perpage/:perpage', (req, res) => {
             const limit = +req.params.perpage;
             const skip = (req.params.page - 1) * limit;
             db.collection(collection)
@@ -48,13 +49,13 @@ module.exports = function (app, db) {
                     collectionProcess(req, res, err, result);
                 });
         });
-        app.get('/' + collection + '/:id', (req, res) => {
+        app.get(config.app_path + collection + '/:id', (req, res) => {
             const where = {'_id': new ObjectID(req.params.id)};
             db.collection(collection).findOne(where, (err, item) => {
                 collectionProcess(req, res, err, item);
             })
         });
-        app.put('/' + collection + '/:id', (req, res) => {
+        app.put(config.app_path + collection + '/:id', (req, res) => {
             const where = {'_id': new ObjectID(req.params.id)};
             const row = req.body;
             delete row._id;
@@ -62,7 +63,7 @@ module.exports = function (app, db) {
                 collectionProcess(req, res, err, result);
             })
         });
-        app.delete('/' + collection + '/:id', (req, res) => {
+        app.delete(config.app_path + collection + '/:id', (req, res) => {
             const where = {'_id': new ObjectID(req.params.id)};
             db.collection(collection).remove(where, (err, result) => {
                 collectionProcess(req, res, err, result);

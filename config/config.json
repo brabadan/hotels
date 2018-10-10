@@ -10,5 +10,6 @@
             "httpOnly": true,
             "maxAge": null
         }
-    }
+    },
+    "app_path": "/hotels/"
 }

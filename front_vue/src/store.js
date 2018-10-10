@@ -50,7 +50,7 @@ export default new Vuex.Store({
   },
   mutations: {
     checkLogin (state) {
-      request('GET', '/login')
+      request('GET', 'login')
         .then(result => {
           if (result.res) state.username = result.res
         })
@@ -59,7 +59,7 @@ export default new Vuex.Store({
         })
     },
     logout (state) {
-      request('POST', '/logout')
+      request('POST', 'logout')
       state.username = null
       state.currentTable.rows = []
     },
@@ -67,7 +67,7 @@ export default new Vuex.Store({
       if (!user.username || !user.password) {
         state.statusBar.text = 'Имя пользователя и пароль должны быть заполнены!!!'
       } else {
-        request('POST', '/login', user)
+        request('POST', 'login', user)
           .then(result => {
             if (result.res && result.res.username) {
               state.statusBar.text = `Успешная авториация: ${result.res.username}`

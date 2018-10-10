@@ -21,7 +21,7 @@ module.exports = function (app, db) {
         store: new MongoStore({db: db})
     }));
 
-    app.post('/login', (req, res) => {
+    app.post(config.app_path + 'login', (req, res) => {
         const username = req.body.username;
         const password = req.body.password;
         delete req.session.user;
@@ -58,12 +58,12 @@ module.exports = function (app, db) {
             })
     });
 
-    app.post('/logout', (req, res) => {
+    app.post(config.app_path + 'logout', (req, res) => {
         req.session.destroy();
         res.send({ res: 'logged out...' });
     });
 
-    app.get('/login', (req, res) => {
+    app.get(config.app_path + 'login', (req, res) => {
         if (req.session.user) {
             res.send({ res: req.session.user.name })
         } else {
