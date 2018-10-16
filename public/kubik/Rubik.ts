@@ -510,7 +510,7 @@ export class Rubik {
         };
         this.parentEl.appendChild(el);
         this.rotKubUpEl = el;
-        el.setAttribute('style', 'top:0px; left: ' + (this.parentEl.clientWidth / 2 - 18) + 'px;');
+        el.setAttribute('style', 'top:0px; left: ' + (this.parentEl.clientWidth / 2 - 10) + 'px;');
         el.classList.add('hoverInfo');
         el.setAttribute('title', 'держите нажатой для поворота всего кубика вверх');
 
@@ -533,7 +533,7 @@ export class Rubik {
         };
         this.parentEl.appendChild(el);
         this.rotKubDownEl = el;
-        el.setAttribute('style', 'left:' + (this.parentEl.clientWidth / 2 - 18) + 'px; top: ' + (this.parentEl.clientHeight - 20 - 2) + 'px;');
+        el.setAttribute('style', 'left:' + (this.parentEl.clientWidth / 2 - 10) + 'px; top: ' + (this.parentEl.clientHeight - 20 - 4) + 'px;');
         el.classList.add('hoverInfo');
         el.setAttribute('title', 'держите нажатой для поворота всего кубика вниз');
 
@@ -1090,7 +1090,7 @@ export class Rubik {
 
         let foundPos = false;  // Если найден поворот этого слоя(pos)
         // цикл по всем предыдущим ходам подряд на одной стороне(side) в одну сторону(direction)
-        while (len > 0 && sideDirection === this.rotRecords[--len].sideDirection) {
+        while (len > 0 && sideDirection == this.rotRecords[--len].sideDirection) {
             // Если повторно крутим тот же слой - оптимизируем и выходим
             if (pos == this.rotRecords[len].pos) {
                 this.rotRecords[len].rotNumber = this.rotNumberNormalize(rotNumber + this.rotRecords[len].rotNumber);
@@ -1101,8 +1101,8 @@ export class Rubik {
 
             rotNumbers[this.rotRecords[len].pos] = this.rotRecords[len].rotNumber;
             current += Math.abs(this.rotRecords[len].rotNumber);
-            minus += Math.abs(this.rotNumberNormalize(this.rotRecords[len].rotNumber - 1)) - 1; // -1 за учтенный слой
-            plus += Math.abs(this.rotNumberNormalize(this.rotRecords[len].rotNumber + 1)) - 1;
+            minus += Math.abs(this.rotRecords[len].rotNumber - 1) - 1; // -1 за учтенный слой
+            plus += Math.abs(this.rotRecords[len].rotNumber + 1) - 1;
 
             // Удаляем ход - для дальнейшей записи оптимизированного
             this.rotRecords.splice(len, 1);

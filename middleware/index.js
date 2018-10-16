@@ -6,8 +6,5 @@ module.exports = function (app) {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
 
-    app.use('/pyatnashki', express.static('public/pyatnashki'));
-    app.use('/kubik', express.static('public/kubik'));
-    app.use('/qwest', express.static('public/qwest'));
-    app.use(config.app_path, express.static('public/hotels'));
+    require('static')(app);
 };

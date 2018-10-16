@@ -3,18 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link type="text/css" rel="stylesheet" href="rubik.css">
+    <!--<link type="text/css" rel="stylesheet" href="kubik/rubik.css">-->
 </head>
 <body>
-    <div id="rubik3" style="width: 400px; height: 400px"></div>
-    <div id="rubik5" style="width: 500px; height: 500px"></div>
-    <button id="left-rotate">left</button>
-    <button id="right-rotate">right</button>
+<h3>Кубик-Рубика</h3>
+<ul>
+    <li>Слои кубика можно вращать кликнув мышкой на квадратики кубика</li>
+    <li>Также можно произвести несколько случайных вращений нажав <b>врщ</b></li>
+    <li>Количество случайных вращений можно задать над кнопкой <b>врщ</b></li>
+    <li><b>Auto</b> - собирает кубик обратно в оптимизированном порядке<b>!!!</b></li>
+    <li>При удерживании нажатыми кнопок <b><, >, ^, v</b> - кубик поворачивается</li>
+    <li><b>!!! Кубик-Рубика тестировался в браузере CHROME !!!</b></li>
+</ul>
+    <div id="rubik" style="width: 400px; height: 400px"></div>
 
-    <script src="Rubik.js"></script>
+    <script src="bundle.js"></script>
 <script>
-    var kubik3 = new Rubik('rubik3',3);
-    var kubik5 = new Rubik('rubik5',5);
+//    var kubik = new Rubik('rubik',3);
 </script>
 </body>
 </html>
