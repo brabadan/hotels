@@ -96,15 +96,17 @@ export default new Vuex.Store({
       state.currentTable = { ...state.currentTable, num, name, curPage: 1, columns }
       let requests = []
       for (let i = 0; i < columns.length; i++) {
-        if (columns[i].link) {
-          let newReq = request('GET', state.serverURL + columns[i].link.table + '/toarray')
+        const link = columns[i].link
+        if (link) {
+          const linkedList = {}
+          let newReq = request('GET', state.serverURL + link.table + '/toarray')
             .then(res => {
               if (res.result && res.result instanceof Array) {
-                const linkedList = res.result.map(r => (
-                  { key: r[columns[i].link.columnForSave], value: r[columns[i].link.columnForList] }
-                ))
-                Vue.set(state.currentTable.columns[i], 'linkList', linkedList)
+                res.result.forEach(r => {
+                  linkedList[r[link.keyField]] = r[link.valueField]
+                })
               }
+              Vue.set(state.currentTable.columns[i], 'linkList', linkedList)
             })
           requests.push(newReq)
         }

@@ -1,5 +1,3 @@
-const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
 const config = require('../config');
 const crypto = require('crypto');
 
@@ -13,13 +11,6 @@ function checkPassword(password, user) {
 }
 
 module.exports = function (app, db) {
-    app.use(session({
-        secret: config.session.secret,
-        cookie: config.session.cookie,
-        saveUninitialized: true,
-        resave: false,
-        store: new MongoStore({db: db})
-    }));
 
     app.post(config.app_path + 'login', (req, res) => {
         const username = req.body.username;

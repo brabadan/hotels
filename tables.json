@@ -59,7 +59,12 @@
     "name": "rooms",
     "columns": [
       {
-        "name": "created_date",
+        "name": "createdAt",
+        "type": "date",
+        "readonly": true
+      },
+      {
+        "name": "updatedAt",
         "type": "date",
         "readonly": true
       },
@@ -73,8 +78,8 @@
         "type": "number",
         "link": {
           "table": "hotels",
-          "columnForSave": "_id",
-          "columnForList": "name"
+          "keyField": "_id",
+          "valueField": "name"
         }
       },
       {

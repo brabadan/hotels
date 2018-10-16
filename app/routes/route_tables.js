@@ -3,24 +3,30 @@ function collectionProcess(req, res, err, result) {
     res.send({err, req: req.body, result})
 }
 
-module.exports = function (app, db) {
+module.exports = function (app, mongoose) {
+    const db = mongoose.connection;
     const ObjectID = require('mongodb').ObjectID;
-    const tables = require('../../tables');
+    // const tables = require('../../tables');
+    const structures = require('../../config/structures');
     const config = require('../../config/index');
 
-    for (let table of tables) {
-        const collection = table.name.trim();
+    // for (let table of tables) {
+    for (let structure of structures) {
+        const collection = structure.collection.trim();
+        const modelSchema = mongoose.Schema(structure.schema, { timestamps: true });
+        const Model = mongoose.model(collection, modelSchema);
         // контроль прав пользователя на таблицу
         app.all(config.app_path + collection + '*', (req, res, next) => {
-            if (table.rightsRequired && req.session.user.rights.indexOf(table.rightsRequired) < 0) {
+            if (structure.rightsRequired && req.session.user.rights.indexOf(structure.rightsRequired) < 0) {
                 // Нет необходимых прав
-                res.send({ err: 403, req: req.body, res: 'Нет необходимых прав' });
+                res.send({err: 403, req: req.body, res: 'Нет необходимых прав'});
             } else {
                 next();
             }
         });
         app.post(config.app_path + collection, (req, res) => {
-            db.collection(collection).insertOne(req.body, (err, result) => {
+            // db.collection(collection).insertOne
+            Model.create(req.body, (err, result) => {
                 collectionProcess(req, res, err, result)
             })
         });
@@ -59,7 +65,8 @@ module.exports = function (app, db) {
             const where = {'_id': new ObjectID(req.params.id)};
             const row = req.body;
             delete row._id;
-            db.collection(collection).replaceOne(where, row, (err, result) => {
+            // db.collection(collection).replaceOne
+            Model.updateOne(where, row, (err, result) => {
                 collectionProcess(req, res, err, result);
             })
         });

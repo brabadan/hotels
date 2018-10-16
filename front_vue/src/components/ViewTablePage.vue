@@ -39,10 +39,7 @@ export default {
     },
     getFieldData: function (column, row) {
       if (column.link && column.linkList) {
-        for (let link of column.linkList) {
-          if (row[column.name] === link.key) return link.value
-        }
-        return 'not found :('
+        return column.linkList[row[column.name]] || 'not found :('
       } else {
         if (column.type === 'date') {
           return (row[column.name] + '').slice(0, 10)
