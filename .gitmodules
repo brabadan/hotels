@@ -1,0 +1,7 @@
+[submodule "public/kubik"]
+    path = public/kubik
+    url = https://github.com/brabadan/kubik.git
+
+[submodule "public/pyatnashki"]
+    path = public/pyatnashki
+    url = https://github.com/brabadan/pyatnashki.git
