@@ -2,7 +2,7 @@
 /*
  * Copyright (c) 2017. Rabadan Bakhmudov
  */
-exports.__esModule = true;
+//exports.__esModule = true;
 /**
  * Created by admin on 03.05.2017.
  */
