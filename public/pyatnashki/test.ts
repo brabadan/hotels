@@ -4,6 +4,7 @@ class Fishka {
     constructor (public num, public posX: number, public posY: number, public pyatnashki: Pyatnashki) {
         this.el = document.createElement('div');
         this.el.classList.add('fishka');
+        if (num < 10) this.el.classList.add('fishka-deci');
         this.el.innerHTML = '<span style="font-size: ' + (pyatnashki.fishkaWidth + pyatnashki.fishkaHeight)/4 + '">' + this.num + '</span>';
         this.el.onmousedown = (ev)=>{this.onclick(ev); return false;};
         this.show();

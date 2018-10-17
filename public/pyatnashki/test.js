@@ -1,4 +1,4 @@
-var Fishka = (function () {
+var Fishka = /** @class */ (function () {
     function Fishka(num, posX, posY, pyatnashki) {
         var _this = this;
         this.num = num;
@@ -7,6 +7,8 @@ var Fishka = (function () {
         this.pyatnashki = pyatnashki;
         this.el = document.createElement('div');
         this.el.classList.add('fishka');
+        if (num < 10)
+            this.el.classList.add('fishka-deci');
         this.el.innerHTML = '<span style="font-size: ' + (pyatnashki.fishkaWidth + pyatnashki.fishkaHeight) / 4 + '">' + this.num + '</span>';
         this.el.onmousedown = function (ev) { _this.onclick(ev); return false; };
         this.show();
@@ -31,7 +33,7 @@ var Fishka = (function () {
     };
     return Fishka;
 }());
-var Pyatnashki = (function () {
+var Pyatnashki = /** @class */ (function () {
     function Pyatnashki(id, colX, colY) {
         if (colX === void 0) { colX = 4; }
         if (colY === void 0) { colY = 4; }
@@ -62,13 +64,13 @@ var Pyatnashki = (function () {
         this.fishki[0][0] = null; //this.fishki.slice(1);
     };
     Pyatnashki.prototype.moveFishka = function (fishkaX, fishkaY, pustoX, pustoY) {
+        var _a, _b;
         var fishka = this.fishki[fishkaX][fishkaY];
         this.fishki[pustoX][pustoY] = fishka;
         this.fishki[fishkaX][fishkaY] = null;
         _a = [fishkaX, fishkaY], this.pustoX = _a[0], this.pustoY = _a[1];
         _b = [pustoX, pustoY], fishka.posX = _b[0], fishka.posY = _b[1];
         fishka.show();
-        var _a, _b;
     };
     Pyatnashki.prototype.checkWin = function () {
         for (var x = 0; x < this.colX; x++) {
@@ -81,4 +83,3 @@ var Pyatnashki = (function () {
     };
     return Pyatnashki;
 }());
-//# sourceMappingURL=test.js.map
