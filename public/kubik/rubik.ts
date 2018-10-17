@@ -21,7 +21,7 @@ class Kvadratik {
         this.color = kubik.colors[sideNumber];
         this.el.classList.add('kvadratik');
         this.el.onmousedown = (ev) => {
-            this.onClick(ev);
+            this.onClickKvadratik(ev);
             return false;
         };
         this.el.onmousemove = (ev) => {
@@ -98,7 +98,7 @@ class Kvadratik {
         this.el.classList.remove('left', 'right', 'up', 'down');
     }
 
-    onClick(ev) {
+    onClickKvadratik(ev) {
         let x = this.posX;
         let y = this.posY;
         switch (x) {
@@ -106,47 +106,47 @@ class Kvadratik {
                 switch (y) {
                     case 0:
                         if (ev.offsetX < ev.offsetY) {
-                            this.kubik.rotate(this, 'left');
+                            this.kubik.rotateLayer(this, 'left');
                         } else {
-                            this.kubik.rotate(this, 'up');
+                            this.kubik.rotateLayer(this, 'up');
                         }
                         break;
                     case this.kubik.length - 1:
                         if (ev.offsetX < (this.el.clientHeight - ev.offsetY)) {
-                            this.kubik.rotate(this, 'left');
+                            this.kubik.rotateLayer(this, 'left');
                         } else {
-                            this.kubik.rotate(this, 'down');
+                            this.kubik.rotateLayer(this, 'down');
                         }
                         break;
                     default:
-                        this.kubik.rotate(this, 'left');
+                        this.kubik.rotateLayer(this, 'left');
                 }
                 break;
             case this.kubik.length - 1:
                 switch (y) {
                     case 0:
                         if (ev.offsetX > (this.el.clientHeight - ev.offsetY)) {
-                            this.kubik.rotate(this, 'right');
+                            this.kubik.rotateLayer(this, 'right');
                         } else {
-                            this.kubik.rotate(this, 'up');
+                            this.kubik.rotateLayer(this, 'up');
                         }
                         break;
                     case this.kubik.length - 1:
                         if (ev.offsetX > ev.offsetY) {
-                            this.kubik.rotate(this, 'right');
+                            this.kubik.rotateLayer(this, 'right');
                         } else {
-                            this.kubik.rotate(this, 'down');
+                            this.kubik.rotateLayer(this, 'down');
                         }
                         break;
                     default:
-                        this.kubik.rotate(this, 'right');
+                        this.kubik.rotateLayer(this, 'right');
                 }
                 break;
             default:
                 if (this.posY == 0) {
-                    this.kubik.rotate(this, 'up');
+                    this.kubik.rotateLayer(this, 'up');
                 } else if (this.posY == this.kubik.length - 1) {
-                    this.kubik.rotate(this, 'down');
+                    this.kubik.rotateLayer(this, 'down');
                 }
         }
         //  this.kubik.normalize();
@@ -452,6 +452,19 @@ export class Rubik {
         el.classList.add('hoverInfo');
         el.setAttribute('title', 'кнопка автоматической сборки');
 
+// кнопка хода назад
+        var el = document.createElement('div');
+        el.innerText = 'Назад';
+        el.classList.add('rotate-kubik', 'width-auto');
+        el.onclick = (ev) => {
+            this.autoAssemblerTik();
+            return false;
+        };
+        this.parentEl.appendChild(el);
+        el.setAttribute('style', 'left:0px; top: 50px');
+        el.classList.add('hoverInfo');
+        el.setAttribute('title', 'Ход назад');
+
 // кнопка вращения всего кубика влево
         el = document.createElement('div');
         el.innerText = '<';
@@ -671,12 +684,12 @@ export class Rubik {
             let y = Math.round(Math.random() * (this.length - 1));
             let direct = Math.round(Math.random() * 3);
 
-            this.rotate(this.kvadrArr[side][x][y], this.directions[direct]);
+            this.rotateLayer(this.kvadrArr[side][x][y], this.directions[direct]);
         }
     }
 
     // вращение слоя кубика - от квадратика по направлению
-    rotate(kvadratik: Kvadratik, direction: string) {
+    rotateLayer(kvadratik: Kvadratik, direction: string) {
 
         switch (kvadratik.sideNumber) {
             case 0:
@@ -1263,6 +1276,7 @@ export class Rubik {
     }
 
     autoAssemblerTik() {
+        if (this.rotRecords.length == 0) return;
         let rotRecord = this.rotRecords.pop();
         // запись прокладка, чтоб наш откат не смешивать при оптимизации записей
         this.rotRecords.push({sideDirection: 'temp', pos: 0, rotNumber: 0});
@@ -1270,23 +1284,23 @@ export class Rubik {
         switch (rotRecord.sideDirection) {
             case 'side0horizontal':
                 if (rotRecord.rotNumber > 0) { // было направо - вертаем влево
-                    this.rotate(this.kvadrArr[0][0][rotRecord.pos], 'left');
+                    this.rotateLayer(this.kvadrArr[0][0][rotRecord.pos], 'left');
                 } else {
-                    this.rotate(this.kvadrArr[0][0][rotRecord.pos], 'right');
+                    this.rotateLayer(this.kvadrArr[0][0][rotRecord.pos], 'right');
                 }
                 break;
             case 'side0vertical':
                 if (rotRecord.rotNumber > 0) { // было вниз - вертаем вверх
-                    this.rotate(this.kvadrArr[0][rotRecord.pos][0], 'up');
+                    this.rotateLayer(this.kvadrArr[0][rotRecord.pos][0], 'up');
                 } else {
-                    this.rotate(this.kvadrArr[0][rotRecord.pos][0], 'down');
+                    this.rotateLayer(this.kvadrArr[0][rotRecord.pos][0], 'down');
                 }
                 break;
             case 'side5horizontal':
                 if (rotRecord.rotNumber > 0) { // было направо - вертаем влево
-                    this.rotate(this.kvadrArr[5][0][rotRecord.pos], 'left');
+                    this.rotateLayer(this.kvadrArr[5][0][rotRecord.pos], 'left');
                 } else {
-                    this.rotate(this.kvadrArr[5][0][rotRecord.pos], 'right');
+                    this.rotateLayer(this.kvadrArr[5][0][rotRecord.pos], 'right');
                 }
                 break;
         }

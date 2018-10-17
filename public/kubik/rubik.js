@@ -24,7 +24,7 @@ var Kvadratik = /** @class */ (function () {
         this.color = kubik.colors[sideNumber];
         this.el.classList.add('kvadratik');
         this.el.onmousedown = function (ev) {
-            _this.onClick(ev);
+            _this.onClickKvadratik(ev);
             return false;
         };
         this.el.onmousemove = function (ev) {
@@ -102,7 +102,7 @@ var Kvadratik = /** @class */ (function () {
     Kvadratik.prototype.onMouseOut = function (ev) {
         this.el.classList.remove('left', 'right', 'up', 'down');
     };
-    Kvadratik.prototype.onClick = function (ev) {
+    Kvadratik.prototype.onClickKvadratik = function (ev) {
         var x = this.posX;
         var y = this.posY;
         switch (x) {
@@ -110,52 +110,52 @@ var Kvadratik = /** @class */ (function () {
                 switch (y) {
                     case 0:
                         if (ev.offsetX < ev.offsetY) {
-                            this.kubik.rotate(this, 'left');
+                            this.kubik.rotateLayer(this, 'left');
                         }
                         else {
-                            this.kubik.rotate(this, 'up');
+                            this.kubik.rotateLayer(this, 'up');
                         }
                         break;
                     case this.kubik.length - 1:
                         if (ev.offsetX < (this.el.clientHeight - ev.offsetY)) {
-                            this.kubik.rotate(this, 'left');
+                            this.kubik.rotateLayer(this, 'left');
                         }
                         else {
-                            this.kubik.rotate(this, 'down');
+                            this.kubik.rotateLayer(this, 'down');
                         }
                         break;
                     default:
-                        this.kubik.rotate(this, 'left');
+                        this.kubik.rotateLayer(this, 'left');
                 }
                 break;
             case this.kubik.length - 1:
                 switch (y) {
                     case 0:
                         if (ev.offsetX > (this.el.clientHeight - ev.offsetY)) {
-                            this.kubik.rotate(this, 'right');
+                            this.kubik.rotateLayer(this, 'right');
                         }
                         else {
-                            this.kubik.rotate(this, 'up');
+                            this.kubik.rotateLayer(this, 'up');
                         }
                         break;
                     case this.kubik.length - 1:
                         if (ev.offsetX > ev.offsetY) {
-                            this.kubik.rotate(this, 'right');
+                            this.kubik.rotateLayer(this, 'right');
                         }
                         else {
-                            this.kubik.rotate(this, 'down');
+                            this.kubik.rotateLayer(this, 'down');
                         }
                         break;
                     default:
-                        this.kubik.rotate(this, 'right');
+                        this.kubik.rotateLayer(this, 'right');
                 }
                 break;
             default:
                 if (this.posY == 0) {
-                    this.kubik.rotate(this, 'up');
+                    this.kubik.rotateLayer(this, 'up');
                 }
                 else if (this.posY == this.kubik.length - 1) {
-                    this.kubik.rotate(this, 'down');
+                    this.kubik.rotateLayer(this, 'down');
                 }
         }
         //  this.kubik.normalize();
@@ -421,6 +421,18 @@ var Rubik = /** @class */ (function () {
         el.setAttribute('style', 'left:0px; top: 25px');
         el.classList.add('hoverInfo');
         el.setAttribute('title', 'кнопка автоматической сборки');
+        // кнопка хода назад
+        var el = document.createElement('div');
+        el.innerText = 'Назад';
+        el.classList.add('rotate-kubik', 'width-auto');
+        el.onclick = function (ev) {
+            _this.autoAssemblerTik();
+            return false;
+        };
+        this.parentEl.appendChild(el);
+        el.setAttribute('style', 'left:0px; top: 50px');
+        el.classList.add('hoverInfo');
+        el.setAttribute('title', 'Ход назад');
         // кнопка вращения всего кубика влево
         el = document.createElement('div');
         el.innerText = '<';
@@ -625,11 +637,11 @@ var Rubik = /** @class */ (function () {
             var x = Math.round(Math.random() * (this.length - 1));
             var y = Math.round(Math.random() * (this.length - 1));
             var direct = Math.round(Math.random() * 3);
-            this.rotate(this.kvadrArr[side][x][y], this.directions[direct]);
+            this.rotateLayer(this.kvadrArr[side][x][y], this.directions[direct]);
         }
     };
     // вращение слоя кубика - от квадратика по направлению
-    Rubik.prototype.rotate = function (kvadratik, direction) {
+    Rubik.prototype.rotateLayer = function (kvadratik, direction) {
         var _this = this;
         switch (kvadratik.sideNumber) {
             case 0:
@@ -1170,32 +1182,34 @@ var Rubik = /** @class */ (function () {
         }, 1000);
     };
     Rubik.prototype.autoAssemblerTik = function () {
+        if (this.rotRecords.length == 0)
+            return;
         var rotRecord = this.rotRecords.pop();
         // запись прокладка, чтоб наш откат не смешивать при оптимизации записей
         this.rotRecords.push({ sideDirection: 'temp', pos: 0, rotNumber: 0 });
         switch (rotRecord.sideDirection) {
             case 'side0horizontal':
                 if (rotRecord.rotNumber > 0) { // было направо - вертаем влево
-                    this.rotate(this.kvadrArr[0][0][rotRecord.pos], 'left');
+                    this.rotateLayer(this.kvadrArr[0][0][rotRecord.pos], 'left');
                 }
                 else {
-                    this.rotate(this.kvadrArr[0][0][rotRecord.pos], 'right');
+                    this.rotateLayer(this.kvadrArr[0][0][rotRecord.pos], 'right');
                 }
                 break;
             case 'side0vertical':
                 if (rotRecord.rotNumber > 0) { // было вниз - вертаем вверх
-                    this.rotate(this.kvadrArr[0][rotRecord.pos][0], 'up');
+                    this.rotateLayer(this.kvadrArr[0][rotRecord.pos][0], 'up');
                 }
                 else {
-                    this.rotate(this.kvadrArr[0][rotRecord.pos][0], 'down');
+                    this.rotateLayer(this.kvadrArr[0][rotRecord.pos][0], 'down');
                 }
                 break;
             case 'side5horizontal':
                 if (rotRecord.rotNumber > 0) { // было направо - вертаем влево
-                    this.rotate(this.kvadrArr[5][0][rotRecord.pos], 'left');
+                    this.rotateLayer(this.kvadrArr[5][0][rotRecord.pos], 'left');
                 }
                 else {
-                    this.rotate(this.kvadrArr[5][0][rotRecord.pos], 'right');
+                    this.rotateLayer(this.kvadrArr[5][0][rotRecord.pos], 'right');
                 }
                 break;
         }
