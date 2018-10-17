@@ -399,7 +399,7 @@ var Rubik = /** @class */ (function () {
         inp.setAttribute('style', 'left:0px; top: 0px');
         // кнопка случайного вращения слоев кубика
         el = document.createElement('div');
-        el.innerText = 'Случайн вращ';
+        el.innerText = 'Случайно вращать';
         el.classList.add('rotate-kubik', 'width-auto');
         el.onclick = function (ev) {
             _this.randomRotate(parseInt(_this.inputKolRot.value));

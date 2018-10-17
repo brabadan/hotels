@@ -428,7 +428,7 @@ export class Rubik {
         inp.setAttribute('style', 'left:0px; top: 0px');
 // кнопка случайного вращения слоев кубика
         el = document.createElement('div');
-        el.innerText = 'Случайн вращ';
+        el.innerText = 'Случайно вращать';
         el.classList.add('rotate-kubik', 'width-auto');
         el.onclick = (ev) => {
             this.randomRotate(parseInt(this.inputKolRot.value));
