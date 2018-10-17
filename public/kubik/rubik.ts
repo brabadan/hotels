@@ -553,7 +553,7 @@ export class Rubik {
         };
         this.parentEl.appendChild(el);
         this.rotKubDownEl = el;
-        el.setAttribute('style', 'left:' + (this.parentEl.clientWidth / 2 - 10) + 'px; top: ' + (this.parentEl.clientHeight - 20 - 2) + 'px;');
+        el.setAttribute('style', 'left:' + (this.parentEl.clientWidth / 2 - 10) + 'px; top: ' + (this.parentEl.clientHeight - 20) + 'px;');
         el.classList.add('hoverInfo');
         el.setAttribute('title', 'держите нажатой для поворота всего кубика вниз');
 

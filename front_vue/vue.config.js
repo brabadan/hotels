@@ -1,5 +1,5 @@
 module.exports = {
-  // baseUrl: '/hotels',
+  baseUrl: '/hotels',
   outputDir: '../public/hotels',
   devServer: {
     proxy: 'http://localhost:8080',
