@@ -2,14 +2,33 @@ body {
     /*display: flex;*/
 }
 
+.description {
+    display: inline-block;
+    margin: 1%;
+    background: linear-gradient(white, lightgray);
+    margin-top: 5%;
+    border: beige 1px solid;
+    box-shadow: 3px 3px 5px grey;
+    padding-right: 2em;
+    max-width: 40%;
+}
+
+.description h3 {
+    text-align: center;
+}
+
+.description li {
+    margin: 0.5em;
+}
+
 .rubik-parent {
     border: solid 2px blue;
     border-radius: 0% 50% 50% 50%;
 
-    margin-left: auto;
-    margin-right: auto;
-    position: relative;
-    /*display: inline-block;*/
+    margin-left: 5%;
+    margin-top: 5%;
+    display: inline-block;
+    position: absolute;
 
     transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;

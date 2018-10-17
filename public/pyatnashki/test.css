@@ -2,10 +2,28 @@ body {
     display: flex;
 }
 
+.header {
+    margin-left: auto;
+    margin-right: auto;
+    width: 30%;
+    text-align: center;
+    background: linear-gradient(white, lightcyan, #93d8d8);
+    border: lightcyan 1px solid;
+}
+
+.body {
+    width: 100%;
+    display: inherit;
+    position: absolute;
+}
+
 .pyatnashki {
     display: flex;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 5%;
+    box-shadow: 9px 9px 9px #7d5c0a;
+    background-color: lightgoldenrodyellow;
 }
 
 .fishka {

@@ -9,7 +9,7 @@ var Fishka = /** @class */ (function () {
         this.el.classList.add('fishka');
         if (num < 10)
             this.el.classList.add('fishka-deci');
-        this.el.innerHTML = '<span style="font-size: ' + (pyatnashki.fishkaWidth + pyatnashki.fishkaHeight) / 4 + '">' + this.num + '</span>';
+        this.el.innerHTML = '<span style="font-size: ' + (pyatnashki.fishkaWidth + pyatnashki.fishkaHeight) / 4 + 'px">' + this.num + '</span>';
         this.el.onmousedown = function (ev) { _this.onclick(ev); return false; };
         this.show();
         pyatnashki.parentEl.appendChild(this.el);

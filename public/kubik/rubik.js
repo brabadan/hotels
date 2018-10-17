@@ -472,7 +472,7 @@ var Rubik = /** @class */ (function () {
         };
         this.parentEl.appendChild(el);
         this.rotKubRightEl = el;
-        el.setAttribute('style', 'left:' + (this.parentEl.clientWidth - 25) + 'px; top: ' + (this.parentEl.clientHeight / 2 - 10) + 'px;');
+        el.setAttribute('style', 'left:' + (this.parentEl.clientWidth - 25 - 2) + 'px; top: ' + (this.parentEl.clientHeight / 2 - 10) + 'px;');
         el.classList.add('hoverInfo');
         el.setAttribute('title', 'держите нажатой для поворота всего кубика вправо');
         // кнопка вращения всего кубика вверх
