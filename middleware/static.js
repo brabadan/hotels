@@ -1,3 +1,4 @@
+const config = require('../config/index');
 const express = require('express');
 
 module.exports = function (app) {

@@ -1,4 +1,3 @@
-const config = require('../config/index');
 const express = require('express');
 
 module.exports = function (app) {
@@ -6,5 +5,5 @@ module.exports = function (app) {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
 
-    require('static')(app);
+    require('./static')(app);
 };
