@@ -2,11 +2,18 @@
 /*
  * Copyright (c) 2017. Rabadan Bakhmudov
  */
-exports.__esModule = true;
+// exports.__esModule = true;
 /**
- * Created by admin on 03.05.2017.
+ * Created by Рабадан on 03.05.2017.
  */
-var Kvadratik = (function () {
+function sign(x) {
+    if (x < 0)
+        return -1;
+    if (x > 0)
+        return 1;
+    return 0;
+}
+var Kvadratik = /** @class */ (function () {
     function Kvadratik(kubik, sideNumber, posX, posY) {
         var _this = this;
         this.kubik = kubik;
@@ -163,7 +170,7 @@ var Kvadratik = (function () {
     };
     return Kvadratik;
 }());
-var Vektor = (function () {
+var Vektor = /** @class */ (function () {
     function Vektor(vX, vY, vZ) {
         this.vX = vX;
         this.vY = vY;
@@ -187,7 +194,7 @@ var Vektor = (function () {
             return; // вектор никуда не крутится
         var piY = dy / 180 * Math.PI;
         var yLen = Math.sqrt(this.vX * this.vX + this.vZ * this.vZ);
-        var piRX = (this.vX == 0 ? Math.PI / 2 * Math.sign(-this.vZ) : Math.atan(-this.vZ / this.vX));
+        var piRX = (this.vX == 0 ? Math.PI / 2 * sign(-this.vZ) : Math.atan(-this.vZ / this.vX));
         if (this.vX < 0)
             piRX += Math.PI;
         var piRZ = Math.PI / 2 + piRX;
@@ -208,7 +215,7 @@ var Vektor = (function () {
     };
     return Vektor;
 }());
-var Rubik = (function () {
+var Rubik = /** @class */ (function () {
     function Rubik(elId, length) {
         if (length === void 0) { length = 3; }
         this.length = length;
@@ -230,7 +237,7 @@ var Rubik = (function () {
         this.parentEl = parentEl;
         this.parentEl.onmousedown = this.parentEl.onselectstart = function (ev) {
             // выделять можно только элемент input
-            if (ev.target.tagName !== 'INPUT')
+            if (ev.srcElement.tagName !== 'INPUT')
                 return false;
         };
         parentEl.classList.add('rubik-parent');
@@ -380,19 +387,7 @@ var Rubik = (function () {
      */
     Rubik.prototype.prepareRotateButtons = function () {
         var _this = this;
-        // кнопка автоматической сборки
-        var el = document.createElement('div');
-        el.innerText = 'Auto';
-        el.classList.add('rotate-kubik');
-        el.onclick = function (ev) {
-            _this.autoAssembler();
-            return false;
-        };
-        this.parentEl.appendChild(el);
-        el.setAttribute('style', 'left:40px; top: 0px');
-        el.classList.add('hoverInfo');
-        el.setAttribute('title', 'кнопка автоматической сборки');
-        // кнопка случаного вращения слоёв кубика
+        // ввод количества случайного вращения слоёв кубика
         var inp = document.createElement('div');
         this.inputKolRot = document.createElement('input');
         this.inputKolRot.setAttribute('type', 'number');
@@ -402,17 +397,30 @@ var Rubik = (function () {
         this.inputKolRot.classList.add('input-kol-rot');
         this.parentEl.appendChild(this.inputKolRot);
         inp.setAttribute('style', 'left:0px; top: 0px');
+        // кнопка случайного вращения слоев кубика
         el = document.createElement('div');
-        el.innerText = 'врщ';
-        el.classList.add('rotate-kubik');
+        el.innerText = 'Случайн вращ';
+        el.classList.add('rotate-kubik', 'width-auto');
         el.onclick = function (ev) {
             _this.randomRotate(parseInt(_this.inputKolRot.value));
             return false;
         };
         this.parentEl.appendChild(el);
-        el.setAttribute('style', 'left:0px; top: 30px');
+        el.setAttribute('style', 'left:40px; top: 0px');
         el.classList.add('hoverInfo');
         el.setAttribute('title', 'кнопка случаного вращения слоёв кубика');
+        // кнопка автоматической сборки
+        var el = document.createElement('div');
+        el.innerText = 'Автосборка';
+        el.classList.add('rotate-kubik', 'width-auto');
+        el.onclick = function (ev) {
+            _this.autoAssembler();
+            return false;
+        };
+        this.parentEl.appendChild(el);
+        el.setAttribute('style', 'left:0px; top: 25px');
+        el.classList.add('hoverInfo');
+        el.setAttribute('title', 'кнопка автоматической сборки');
         // кнопка вращения всего кубика влево
         el = document.createElement('div');
         el.innerText = '<';
@@ -452,7 +460,7 @@ var Rubik = (function () {
         };
         this.parentEl.appendChild(el);
         this.rotKubRightEl = el;
-        el.setAttribute('style', 'left:' + (this.parentEl.clientWidth - 35) + 'px; top: ' + (this.parentEl.clientHeight / 2 - 10) + 'px;');
+        el.setAttribute('style', 'left:' + (this.parentEl.clientWidth - 25) + 'px; top: ' + (this.parentEl.clientHeight / 2 - 10) + 'px;');
         el.classList.add('hoverInfo');
         el.setAttribute('title', 'держите нажатой для поворота всего кубика вправо');
         // кнопка вращения всего кубика вверх
@@ -494,7 +502,7 @@ var Rubik = (function () {
         };
         this.parentEl.appendChild(el);
         this.rotKubDownEl = el;
-        el.setAttribute('style', 'left:' + (this.parentEl.clientWidth / 2 - 10) + 'px; top: ' + (this.parentEl.clientHeight - 20 - 4) + 'px;');
+        el.setAttribute('style', 'left:' + (this.parentEl.clientWidth / 2 - 10) + 'px; top: ' + (this.parentEl.clientHeight - 20 - 2) + 'px;');
         el.classList.add('hoverInfo');
         el.setAttribute('title', 'держите нажатой для поворота всего кубика вниз');
     };
@@ -502,7 +510,7 @@ var Rubik = (function () {
     Rubik.prototype.vektors2Degs = function (vektorZ, vektorY) {
         var vektZ = new Vektor(vektorZ.vX, vektorZ.vY, vektorZ.vZ);
         var vektY = new Vektor(vektorY.vX, vektorY.vY, vektorY.vZ);
-        var degX = (vektZ.vZ == 0 ? 90 * Math.sign(vektZ.vY) : Math.atan(vektZ.vY / vektZ.vZ) * 180 / Math.PI);
+        var degX = (vektZ.vZ == 0 ? 90 * sign(vektZ.vY) : Math.atan(vektZ.vY / vektZ.vZ) * 180 / Math.PI);
         if (vektZ.vZ < 0)
             degX += 180;
         var degs = this.degX2DegYZ(degX, vektY, vektZ);
@@ -516,12 +524,12 @@ var Rubik = (function () {
         vektZ.rotateX(-degX);
         vektZ.vY = 0; // страховка от не точности
         vektY.rotateX(-degX);
-        var degY = (vektZ.vZ == 0 ? 90 * Math.sign(vektZ.vX) : Math.atan(vektZ.vX / vektZ.vZ) * 180 / Math.PI);
+        var degY = (vektZ.vZ == 0 ? 90 * sign(vektZ.vX) : Math.atan(vektZ.vX / vektZ.vZ) * 180 / Math.PI);
         if (vektZ.vZ < 0)
             degY += 180;
         vektZ.rotateY(-degY);
         vektY.rotateY(-degY);
-        var degZ = (vektY.vY == 0 ? 90 * Math.sign(vektY.vX) : Math.atan(vektY.vX / vektY.vY) * 180 / Math.PI);
+        var degZ = (vektY.vY == 0 ? 90 * sign(vektY.vX) : Math.atan(vektY.vX / vektY.vY) * 180 / Math.PI);
         if (vektY.vY < 0)
             degZ += 180;
         // поворачиваем результат на ближайшую позицию для кубика
@@ -542,6 +550,7 @@ var Rubik = (function () {
     };
     // Вращение всего кубика в пространстве
     Rubik.prototype.rotateKubik = function (direction, deg) {
+        var _a, _b;
         var rotKubDeg = deg ? deg : this.rotKubDeg;
         switch (direction) {
             case 'left':
@@ -570,7 +579,6 @@ var Rubik = (function () {
         _b = [Math.round(dX), Math.round(dY), Math.round(dZ)], this.degX = _b[0], this.degY = _b[1], this.degZ = _b[2];
         // перерисовываем кубик
         this.rotateKubikShow();
-        var _a, _b;
     };
     // перерисовываем кубик
     Rubik.prototype.rotateKubikShow = function () {
@@ -752,6 +760,7 @@ var Rubik = (function () {
     };
     // вращение копии кубика с поворачиваемым слоем квадратиков
     Rubik.prototype.moveCopyKubik = function (x, y, z) {
+        var _a, _b;
         var vektX, vektY, vektZ;
         var fromSide = 0;
         var rotZ;
@@ -762,32 +771,32 @@ var Rubik = (function () {
         vektY = new Vektor(this.vektorY.vX, this.vektorY.vY, this.vektorY.vZ);
         vektZ = new Vektor(this.vektorZ.vX, this.vektorZ.vY, this.vektorZ.vZ);
         // Рисуем копию для поворота
-        if (x == 90) {
+        if (x == 90) { // вращаем переднюю грань наверх-вперед
             fromSide = 1;
             vektZ = new Vektor(this.vektorX.vX, this.vektorX.vY, this.vektorX.vZ);
             rotZ = 90;
         }
-        if (x == -90) {
+        if (x == -90) { // вращаем переднюю грань вниз-вперед
             fromSide = 1;
             vektZ = new Vektor(this.vektorX.vX, this.vektorX.vY, this.vektorX.vZ);
             rotZ = -90;
         }
-        if (y == 90) {
+        if (y == 90) { // вращаем переднюю грань направо-вперед
             fromSide = 5;
             vektZ = new Vektor(this.vektorY.vX, this.vektorY.vY, this.vektorY.vZ);
             vektY = new Vektor(-this.vektorZ.vX, -this.vektorZ.vY, -this.vektorZ.vZ);
             rotZ = -90;
         }
-        if (y == -90) {
+        if (y == -90) { // вращаем переднюю грань налево-вперед
             fromSide = 5;
             vektZ = new Vektor(this.vektorY.vX, this.vektorY.vY, this.vektorY.vZ);
             vektY = new Vektor(-this.vektorZ.vX, -this.vektorZ.vY, -this.vektorZ.vZ);
             rotZ = 90;
         }
-        if (z == 90) {
+        if (z == 90) { // вращаем переднюю грань по часовой
             rotZ = 90;
         }
-        if (z == -90) {
+        if (z == -90) { // вращаем переднюю грань против часовой
             rotZ = -90;
         }
         _a = this.vektors2Degs(vektZ, vektY), this.degX = _a[0], this.degY = _a[1], this.degZ = _a[2];
@@ -802,7 +811,6 @@ var Rubik = (function () {
         this.copyKubik.setAttribute('style', this.kubikStyle() + '; z-index: 100;');
         // восстанавливаем координаты кубика
         _b = [degX, degY, degZ], this.degX = _b[0], this.degY = _b[1], this.degZ = _b[2];
-        var _a, _b;
     };
     // вращаем влево слой(строку) по номеру y на 5 стороне(верхней)
     Rubik.prototype.moveSide5Left = function (y) {
@@ -1167,7 +1175,7 @@ var Rubik = (function () {
         this.rotRecords.push({ sideDirection: 'temp', pos: 0, rotNumber: 0 });
         switch (rotRecord.sideDirection) {
             case 'side0horizontal':
-                if (rotRecord.rotNumber > 0) {
+                if (rotRecord.rotNumber > 0) { // было направо - вертаем влево
                     this.rotate(this.kvadrArr[0][0][rotRecord.pos], 'left');
                 }
                 else {
@@ -1175,7 +1183,7 @@ var Rubik = (function () {
                 }
                 break;
             case 'side0vertical':
-                if (rotRecord.rotNumber > 0) {
+                if (rotRecord.rotNumber > 0) { // было вниз - вертаем вверх
                     this.rotate(this.kvadrArr[0][rotRecord.pos][0], 'up');
                 }
                 else {
@@ -1183,7 +1191,7 @@ var Rubik = (function () {
                 }
                 break;
             case 'side5horizontal':
-                if (rotRecord.rotNumber > 0) {
+                if (rotRecord.rotNumber > 0) { // было направо - вертаем влево
                     this.rotate(this.kvadrArr[5][0][rotRecord.pos], 'left');
                 }
                 else {
@@ -1193,7 +1201,7 @@ var Rubik = (function () {
         }
         this.rotRecords.pop(); // убираем наш последний ход
         this.rotRecords.pop(); // убираем прокладку
-        rotRecord.rotNumber = rotRecord.rotNumber - Math.sign(rotRecord.rotNumber);
+        rotRecord.rotNumber = rotRecord.rotNumber - sign(rotRecord.rotNumber);
         // если слой надо еще вращать сохраняем запись
         if (rotRecord.rotNumber != 0)
             this.rotRecords.push(rotRecord);
@@ -1206,5 +1214,4 @@ var Rubik = (function () {
     };
     return Rubik;
 }());
-exports.Rubik = Rubik;
-//# sourceMappingURL=Rubik.js.map
+// exports.Rubik = Rubik;
