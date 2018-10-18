@@ -2,6 +2,11 @@ body {
     /*display: flex;*/
 }
 
+@font-face {
+    font-family: Description; /* Гарнитура шрифта */
+    src: url('fonts/Adventure.ttf'); /* Путь к файлу со шрифтом */
+}
+
 .description {
     display: inline-block;
     margin: 1%;
@@ -11,6 +16,8 @@ body {
     box-shadow: 3px 3px 5px grey;
     padding-right: 2em;
     max-width: 40%;
+    font-family: Description, 'Comic Sans MS', cursive;
+    font-size: larger;
 }
 
 .description h3 {
