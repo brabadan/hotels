@@ -7,5 +7,5 @@ module.exports = function (app) {
     app.use('/kubik', express.static('public/kubik'));
     app.use('/qwest', express.static('public/qwest'));
     // app.use(config.app_path, express.static('public/hotels'));
-    app.use('/hotels', express.static('public/hotels'));
+    app.use('/hotel_admin', express.static('public/hotels'));
 };
