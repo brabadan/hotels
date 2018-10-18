@@ -65,6 +65,8 @@ module.exports = function (app, mongoose) {
             const where = {'_id': new ObjectID(req.params.id)};
             const row = req.body;
             delete row._id;
+            delete row.updatedAt;
+            delete row.createdAt;
             // db.collection(collection).replaceOne
             Model.updateOne(where, row, (err, result) => {
                 collectionProcess(req, res, err, result);
