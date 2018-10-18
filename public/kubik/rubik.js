@@ -14,6 +14,13 @@ function sign(x) {
     return 0;
 }
 var Kvadratik = /** @class */ (function () {
+    /**
+     * Объявляем объект Квадратик
+     * @param kubik - ссылка на его кубик
+     * @param sideNumber - ссылка на грань
+     * @param posX - позиция на грани слева-направо
+     * @param posY - позиция на грани сверху-вниз
+     */
     function Kvadratik(kubik, sideNumber, posX, posY) {
         var _this = this;
         this.kubik = kubik;
@@ -99,12 +106,20 @@ var Kvadratik = /** @class */ (function () {
                 }
         }
     };
+    /**
+     * Убрали курсор с квадратика - прячем стрелку направления вращения
+     * @param ev - Квадратик
+     */
     Kvadratik.prototype.onMouseOut = function (ev) {
         this.el.classList.remove('left', 'right', 'up', 'down');
     };
+    /**
+     * При клике по квадратику определяем какой слой, куда вращать
+     * @param ev - Квадратик
+     */
     Kvadratik.prototype.onClickKvadratik = function (ev) {
-        var x = this.posX;
-        var y = this.posY;
+        var x = this.posX; // Координаты на текущей грани слева-направо
+        var y = this.posY; // Координаты на текущей грани сверху-вниз
         switch (x) {
             case 0:
                 switch (y) {
@@ -160,6 +175,7 @@ var Kvadratik = /** @class */ (function () {
         }
         //  this.kubik.normalize();
     };
+    // Рисуем квадратик
     Kvadratik.prototype.show = function () {
         var size = this.kubik.kvadrSize;
         var x = 0;
@@ -170,13 +186,24 @@ var Kvadratik = /** @class */ (function () {
     };
     return Kvadratik;
 }());
+// Объект Вектор - для ортогональной системы координат
 var Vektor = /** @class */ (function () {
+    /**
+     * Начальные координаты Вектора
+     * @param vX
+     * @param vY
+     * @param vZ
+     */
     function Vektor(vX, vY, vZ) {
         this.vX = vX;
         this.vY = vY;
         this.vZ = vZ;
         this.vLen = Math.sqrt(vX * vX + vY * vY + vZ * vZ);
     }
+    /**
+     * Вращение Вектора по оси X
+     * @param dx - угол вращения
+     */
     Vektor.prototype.rotateX = function (dx) {
         if (this.vY == 0 && this.vZ == 0 || dx == 0)
             return; // вектор никуда не крутится
@@ -189,6 +216,10 @@ var Vektor = /** @class */ (function () {
         this.vY = parseFloat((Math.cos(piX + piRY) * xLen).toFixed(5));
         this.vZ = parseFloat((Math.cos(piX + piRZ) * xLen).toFixed(5));
     };
+    /**
+     * Вращение Вектора по оси Y
+     * @param dy - угол вращения
+     */
     Vektor.prototype.rotateY = function (dy) {
         if (this.vX == 0 && this.vZ == 0 || dy == 0)
             return; // вектор никуда не крутится
@@ -201,6 +232,10 @@ var Vektor = /** @class */ (function () {
         this.vX = parseFloat((Math.cos(piY + piRX) * yLen).toFixed(5));
         this.vZ = parseFloat((Math.cos(piY + piRZ) * yLen).toFixed(5));
     };
+    /**
+     * Вращение Вектора по оси Z
+     * @param dz - угол вращения
+     */
     Vektor.prototype.rotateZ = function (dz) {
         if (this.vX == 0 && this.vY == 0 || dz == 0)
             return; // вектор никуда не крутится
@@ -215,23 +250,32 @@ var Vektor = /** @class */ (function () {
     };
     return Vektor;
 }());
+/**
+ * Объект Кубик-Рубика
+ */
 var Rubik = /** @class */ (function () {
+    /**
+     * Объект Кубика-Рубика
+     * @param elId - Id DOM элемента
+     * @param length - количество квадратиков на грани Кубика (по умолчанию 3х3)
+     */
     function Rubik(elId, length) {
         if (length === void 0) { length = 3; }
         this.length = length;
         this.directions = ['left', 'right', 'up', 'down'];
+        // Ортогональная система Векторов
         this.vektorZ = new Vektor(0, 0, 10000);
         this.vektorY = new Vektor(0, 10000, 0);
         this.vektorX = new Vektor(10000, 0, 0);
-        this.sides = [];
-        this.copySides = [];
+        this.sides = []; // Грани Кубика
+        this.copySides = []; // Копии граней Кубика
         this.kvadrArr = [];
         this.colors = ['red', 'green', 'blue', 'yellow', 'white', 'cyan'];
         this.degX = 0;
         this.degY = 0;
         this.degZ = 0;
-        this.rotKubDeg = 5;
-        this.rotateTimeIntervalID = 0;
+        this.rotKubDeg = 5; // Угол однократного поворота Кубика
+        this.rotateTimeIntervalID = 0; // для setTimer при повороте
         this.rotRecords = [];
         var parentEl = document.getElementById(elId);
         this.parentEl = parentEl;
@@ -241,13 +285,16 @@ var Rubik = /** @class */ (function () {
                 return false;
         };
         parentEl.classList.add('rubik-parent');
+        // Создаем DOM-элемент Кубика
         this.rubikEl = document.createElement('div');
         this.rubikEl.classList.add('rubik');
         this.parentEl.appendChild(this.rubikEl);
         this.el = document.createElement('div');
         this.el.classList.add('rubik');
+        // Создаем DOM-элемент копии Кубика (для вращения слоев)
         this.copyKubik = document.createElement('div');
         this.copyKubik.classList.add('rubik', 'rubik-copy');
+        // Вычисляем размеры элементов
         this.kvadrSize = Math.round((parentEl.clientWidth + parentEl.clientHeight) / 8 / this.length) * 2;
         this.sideSize = this.kvadrSize * this.length;
         this.rubikEl.appendChild(this.el);
@@ -285,15 +332,20 @@ var Rubik = /** @class */ (function () {
             }
             this.kvadrArr.push(kvadrArrSide);
         }
+        // Прорисовываем все квадратики на своих местах
         this.normalize();
+        // Показываем кнопки для вращения Кубика и т.д.
         this.prepareRotateButtons();
-        // this.rotateKubik('right');
-        // this.rotateKubik('down');
-        // this.randomRotate();
+        // Поворачиваем для красивого начального вида
         this.rotateKubik('right', 30);
         this.rotateKubik('down', 30);
         this.rotateKubikShow();
     }
+    /**
+     * Рисуем сторону исходя из направления взгляда
+     * @param side - номер Стороны
+     * @param fromSide - направление взгляда с этой стороны
+     */
     Rubik.prototype.sideStyle = function (side, fromSide) {
         if (fromSide === void 0) { fromSide = 0; }
         var _a = [0, 0, 0], rotX = _a[0], rotY = _a[1], rotZ = _a[2];
@@ -383,7 +435,7 @@ var Rubik = /** @class */ (function () {
         clearInterval(this.rotateTimeIntervalID);
     };
     /**
-     *подготовка кнопок для вращения всего кубика и случайных ходов
+     *Рисуем кнопки для вращения всего кубика и случайных ходов
      */
     Rubik.prototype.prepareRotateButtons = function () {
         var _this = this;
@@ -534,7 +586,7 @@ var Rubik = /** @class */ (function () {
         var vektZ = vZ;
         var degX = dX;
         vektZ.rotateX(-degX);
-        vektZ.vY = 0; // страховка от не точности
+        vektZ.vY = 0; // страховка от неточности
         vektY.rotateX(-degX);
         var degY = (vektZ.vZ == 0 ? 90 * sign(vektZ.vX) : Math.atan(vektZ.vX / vektZ.vZ) * 180 / Math.PI);
         if (vektZ.vZ < 0)
@@ -560,7 +612,11 @@ var Rubik = /** @class */ (function () {
         // let collision = Math.abs(this.degX - degX) + Math.abs(this.degY - degY) + Math.abs(this.degZ - degZ);
         return [degX, degY, degZ];
     };
-    // Вращение всего кубика в пространстве
+    /**
+     * Вращение всего кубика в пространстве
+     * @param direction - направление вращения
+     * @param deg - угол вращения
+     */
     Rubik.prototype.rotateKubik = function (direction, deg) {
         var _a, _b;
         var rotKubDeg = deg ? deg : this.rotKubDeg;
@@ -596,6 +652,9 @@ var Rubik = /** @class */ (function () {
     Rubik.prototype.rotateKubikShow = function () {
         this.el.setAttribute('style', this.kubikStyle());
     };
+    /**
+     * Возвращает текущий стиль для Кубика
+     */
     Rubik.prototype.kubikStyle = function () {
         // style += 'margin-left: '+this.sideSize/3+'px; margin-top: '+this.sideSize/1.7+'px; ';
         var transform = " rotateX(" + this.degX + "deg) rotateY(" + this.degY + "deg) rotateZ(" + this.degZ + "deg)";
@@ -1172,6 +1231,9 @@ var Rubik = /** @class */ (function () {
             _this.rubikEl.classList.remove('kubik-assembling');
         }, 500);
     };
+    /**
+     * Запускаем Автосборку
+     */
     Rubik.prototype.autoAssembler = function () {
         var _this = this;
         if (this.rotRecords.length == 0)
@@ -1181,6 +1243,9 @@ var Rubik = /** @class */ (function () {
             _this.autoAssemblerTik();
         }, 1000);
     };
+    /**
+     * Шаг Назад - для Автосборки
+     */
     Rubik.prototype.autoAssemblerTik = function () {
         if (this.rotRecords.length == 0)
             return;

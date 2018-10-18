@@ -16,6 +16,13 @@ class Kvadratik {
     public el: HTMLElement;
     public color: string;
 
+    /**
+     * Объявляем объект Квадратик
+     * @param kubik - ссылка на его кубик
+     * @param sideNumber - ссылка на грань
+     * @param posX - позиция на грани слева-направо
+     * @param posY - позиция на грани сверху-вниз
+     */
     constructor(public kubik: Rubik, public sideNumber: number, public posX: number, public posY: number) {
         this.el = document.createElement('div');
         this.color = kubik.colors[sideNumber];
@@ -94,13 +101,21 @@ class Kvadratik {
         }
     }
 
+    /**
+     * Убрали курсор с квадратика - прячем стрелку направления вращения
+     * @param ev - Квадратик
+     */
     onMouseOut(ev) {
         this.el.classList.remove('left', 'right', 'up', 'down');
     }
 
+    /**
+     * При клике по квадратику определяем какой слой, куда вращать
+     * @param ev - Квадратик
+     */
     onClickKvadratik(ev) {
-        let x = this.posX;
-        let y = this.posY;
+        let x = this.posX; // Координаты на текущей грани слева-направо
+        let y = this.posY; // Координаты на текущей грани сверху-вниз
         switch (x) {
             case 0:
                 switch (y) {
@@ -152,6 +167,7 @@ class Kvadratik {
         //  this.kubik.normalize();
     }
 
+    // Рисуем квадратик
     show() {
         let size = this.kubik.kvadrSize;
         let x = 0;
@@ -164,13 +180,24 @@ class Kvadratik {
     }
 }
 
+// Объект Вектор - для ортогональной системы координат
 class Vektor {
     public vLen: number;
 
+    /**
+     * Начальные координаты Вектора
+     * @param vX
+     * @param vY
+     * @param vZ
+     */
     constructor(public vX: number, public vY: number, public vZ: number) {
         this.vLen = Math.sqrt(vX * vX + vY * vY + vZ * vZ);
     }
 
+    /**
+     * Вращение Вектора по оси X
+     * @param dx - угол вращения
+     */
     rotateX(dx: number) {
         if (this.vY == 0 && this.vZ == 0 || dx == 0) return; // вектор никуда не крутится
         let piX = dx / 180 * Math.PI;
@@ -184,6 +211,10 @@ class Vektor {
         this.vZ = parseFloat((Math.cos(piX + piRZ) * xLen).toFixed(5));
     }
 
+    /**
+     * Вращение Вектора по оси Y
+     * @param dy - угол вращения
+     */
     rotateY(dy: number) {
         if (this.vX == 0 && this.vZ == 0 || dy == 0) return; // вектор никуда не крутится
         let piY = dy / 180 * Math.PI;
@@ -198,6 +229,10 @@ class Vektor {
         this.vZ = parseFloat((Math.cos(piY + piRZ) * yLen).toFixed(5));
     }
 
+    /**
+     * Вращение Вектора по оси Z
+     * @param dz - угол вращения
+     */
     rotateZ(dz: number) {
         if (this.vX == 0 && this.vY == 0 || dz == 0) return; // вектор никуда не крутится
         let piZ = dz / 180 * Math.PI;
@@ -213,38 +248,47 @@ class Vektor {
 }
 
 
-type KvadrArrType = Kvadratik[];
-type KvadrArr2D = KvadrArrType[];
+type KvadrArrType = Kvadratik[]; // Ряд квадратиков
+type KvadrArr2D = KvadrArrType[]; // Слой квадратиков
 
+/**
+ * Объект Кубик-Рубика
+ */
 export class Rubik {
     private directions = ['left', 'right', 'up', 'down'];
+    // Ортогональная система Векторов
     public vektorZ: Vektor = new Vektor(0, 0, 10000);
     public vektorY: Vektor = new Vektor(0, 10000, 0);
     public vektorX: Vektor = new Vektor(10000, 0, 0);
 
-    public parentEl: HTMLElement;
-    public rubikEl: HTMLElement;
+    public parentEl: HTMLElement; // Кубика родительский DOM-элемент
+    public rubikEl: HTMLElement; // Кубика DOM-элемент
     public el: HTMLElement;
-    public copyKubik: HTMLElement;
-    public sides: HTMLElement[] = [];
-    public copySides: HTMLElement[] = [];
+    public copyKubik: HTMLElement; // Копия Кубика - для вращения слоя
+    public sides: HTMLElement[] = []; // Грани Кубика
+    public copySides: HTMLElement[] = []; // Копии граней Кубика
     public kvadrArr: KvadrArr2D[] = [];
-    public kvadrSize: number;
-    public sideSize: number;
+    public kvadrSize: number; // Размер Квадратика
+    public sideSize: number; // Размер Грани
     public colors = ['red', 'green', 'blue', 'yellow', 'white', 'cyan'];
     public degX: number = 0;
     public degY: number = 0;
     public degZ: number = 0;
-    public rotKubDeg = 5;
-    public rotKubLeftEl: HTMLElement;
+    public rotKubDeg = 5; // Угол однократного поворота Кубика
+    public rotKubLeftEl: HTMLElement; // Кнопки поворота Кубика
     public rotKubRightEl: HTMLElement;
     public rotKubUpEl: HTMLElement;
     public rotKubDownEl: HTMLElement;
-    public inputKolRot: HTMLInputElement;
-    public rotateTimeIntervalID = 0;
+    public inputKolRot: HTMLInputElement; // Ввод количества для случайного поворота Кубика
+    public rotateTimeIntervalID = 0; // для setTimer при повороте
     public rotRecords: { sideDirection: string, pos: number, rotNumber: number }[] = [];
-    public autoAssemblerID: number;
+    public autoAssemblerID: number; // для setTimer при Автосборке
 
+    /**
+     * Объект Кубика-Рубика
+     * @param elId - Id DOM элемента
+     * @param length - количество квадратиков на грани Кубика (по умолчанию 3х3)
+     */
     constructor(elId: string, public length = 3) {
         let parentEl = document.getElementById(elId);
         this.parentEl = parentEl;
@@ -254,6 +298,7 @@ export class Rubik {
         };
         parentEl.classList.add('rubik-parent');
 
+        // Создаем DOM-элемент Кубика
         this.rubikEl = document.createElement('div');
         this.rubikEl.classList.add('rubik');
         this.parentEl.appendChild(this.rubikEl);
@@ -261,9 +306,11 @@ export class Rubik {
         this.el = document.createElement('div');
         this.el.classList.add('rubik');
 
+        // Создаем DOM-элемент копии Кубика (для вращения слоев)
         this.copyKubik = document.createElement('div');
         this.copyKubik.classList.add('rubik', 'rubik-copy');
 
+        // Вычисляем размеры элементов
         this.kvadrSize = Math.round((parentEl.clientWidth + parentEl.clientHeight) / 8 / this.length) * 2;
         this.sideSize = this.kvadrSize * this.length;
 
@@ -308,17 +355,22 @@ export class Rubik {
             }
             this.kvadrArr.push(kvadrArrSide);
         }
+        // Прорисовываем все квадратики на своих местах
         this.normalize();
+        // Показываем кнопки для вращения Кубика и т.д.
         this.prepareRotateButtons();
-        // this.rotateKubik('right');
-        // this.rotateKubik('down');
 
-        // this.randomRotate();
+        // Поворачиваем для красивого начального вида
         this.rotateKubik('right', 30);
         this.rotateKubik('down', 30);
         this.rotateKubikShow();
     }
 
+    /**
+     * Рисуем сторону исходя из направления взгляда
+     * @param side - номер Стороны
+     * @param fromSide - направление взгляда с этой стороны
+     */
     sideStyle(side: number, fromSide = 0) {
         let [rotX, rotY, rotZ] = [0, 0, 0];
 
@@ -412,7 +464,7 @@ export class Rubik {
     }
 
     /**
-     *подготовка кнопок для вращения всего кубика и случайных ходов
+     *Рисуем кнопки для вращения всего кубика и случайных ходов
      */
     prepareRotateButtons() {
 
@@ -577,7 +629,7 @@ export class Rubik {
         let vektZ = vZ;
         let degX = dX;
         vektZ.rotateX(-degX);
-        vektZ.vY = 0;  // страховка от не точности
+        vektZ.vY = 0;  // страховка от неточности
         vektY.rotateX(-degX);
 
         let degY = (vektZ.vZ == 0 ? 90 * sign(vektZ.vX) : Math.atan(vektZ.vX / vektZ.vZ) * 180 / Math.PI);
@@ -600,7 +652,11 @@ export class Rubik {
         return [degX, degY, degZ]
     }
 
-    // Вращение всего кубика в пространстве
+    /**
+     * Вращение всего кубика в пространстве
+     * @param direction - направление вращения
+     * @param deg - угол вращения
+     */
     rotateKubik(direction: string, deg?: number) {
         var rotKubDeg = deg ? deg : this.rotKubDeg;
         switch (direction) {
@@ -640,6 +696,9 @@ export class Rubik {
         this.el.setAttribute('style', this.kubikStyle());
     }
 
+    /**
+     * Возвращает текущий стиль для Кубика
+     */
     kubikStyle() {
         // style += 'margin-left: '+this.sideSize/3+'px; margin-top: '+this.sideSize/1.7+'px; ';
         let transform = ` rotateX(${this.degX}deg) rotateY(${this.degY}deg) rotateZ(${this.degZ}deg)`;
@@ -670,7 +729,6 @@ export class Rubik {
         this.copyKubik.style.zIndex = '1';
         this.copyKubik.style.display = 'none';
         // this.copyKubik.style.transition = null;
-
     }
 
     /**
@@ -1266,6 +1324,9 @@ export class Rubik {
         }, 500);
     }
 
+    /**
+     * Запускаем Автосборку
+     */
     autoAssembler() {
         if (this.rotRecords.length == 0) return;
 
@@ -1275,6 +1336,9 @@ export class Rubik {
         }, 1000);
     }
 
+    /**
+     * Шаг Назад - для Автосборки
+     */
     autoAssemblerTik() {
         if (this.rotRecords.length == 0) return;
         let rotRecord = this.rotRecords.pop();
