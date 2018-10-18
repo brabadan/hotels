@@ -6,27 +6,27 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    serverURL: '', // http://localhost:3000/',
-    username: '',
-    links: [{ name: 'Конфигурация' }, { name: 'Работаем с отелем' }],
-    tableList: [],
-    currentTable: {
-      num: null,
-      name: '',
-      curPage: 1,
-      maxPage: 0,
-      perPage: 5,
-      columns: [],
-      rows: [],
-      length: 0
+    serverURL: '', // Путь для работы с другим сервером API
+    username: '', // Аутентифицированный Пользователь
+    links: [{ name: 'Конфигурация' }, { name: 'Работаем с отелем' }], // массив для sideMenu - устарел
+    tableList: [], // Массив таблиц для просмотра и редактирования
+    currentTable: { // Текущая таблица при просмотре и редактировании
+      num: null, // Номер текущей таблицы
+      name: '', // Название текущей таблицы
+      curPage: 1, // Номер страницы в Пагинаторе
+      maxPage: 0, // Максимальное количество страниц в Пагинаторе
+      perPage: 5, // Строк на странице просмотра таблиц
+      columns: [], // Массив столбцов текущей таблицы - свойства и линки
+      rows: [], // Строки таблицы для текущей страницы Пагинатора
+      length: 0 // Общее количество записей таблицы
     },
-    statusBar: {
-      text: 'statusBar',
-      hidden: false
+    statusBar: { // Статусбар для отображения текущего состояния
+      text: 'statusBar', // Текст статусбара
+      hidden: false // Невидимость/видимость
     },
-    currentTableNum: 0,
-    currentUser: 0,
-    newRow: {}
+    currentTableNum: 0, // Номер текущей таблицы - устарел
+    currentUser: 0, // Номер пользователя - устарел
+    newRow: {} // Здесь хранятся строки ввода данных для таблиц
   },
   getters: {
     getTableList: (state) => {
@@ -49,13 +49,14 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    // Опрос сервера на продолжение авторизованной сессии. Если да - сервер возвращает нам имя пользователя
     checkLogin (state) {
       request('GET', 'login')
         .then(result => {
           if (result.res) state.username = result.res
         })
         .catch(e => {
-          state.statusBar.text = `Ошибка проверки подключение: ${e}`
+          state.statusBar.text = `Ошибка проверки подключения: ${e}`
         })
     },
     logout (state) {
@@ -85,9 +86,7 @@ export default new Vuex.Store({
     showStatusBar (state, text) {
       state.statusBar = { text, hidden: false }
     },
-    addHotel (state, hotelName) {
-      state.hotelsList.push(hotelName)
-    },
+    // Выбор таблицы для просмотра и редактирования
     selectTable (state, tableNum) {
       const num = +tableNum
       state.currentTableNum = num
@@ -121,6 +120,7 @@ export default new Vuex.Store({
         this.dispatch('selectPage', 1)
       }
     },
+    // Выбор страницы Пагинатора
     selectPage (state, page) {
       state.statusBar.text = `Loading page ${page} data...`
       const { name, perPage } = state.currentTable
@@ -139,6 +139,7 @@ export default new Vuex.Store({
           state.statusBar.text = `error: ${error} when loading page ${page}`
         })
     },
+    // Получить общий размер таблицы
     countTableLength (state) {
       const name = state.currentTable.name
       request('GET', state.serverURL + name + '/count')
@@ -148,6 +149,7 @@ export default new Vuex.Store({
           state.statusBar.text = res
         })
     },
+    // Нажали редактировать строку таблицы - записываем её в newRow
     onEditRow (state, id) {
       state.currentTable.rows.forEach((row, index) => {
         if (row._id === id) {
@@ -158,6 +160,7 @@ export default new Vuex.Store({
         }
       })
     },
+    // Сохранение отредактированной строки таблицы
     replaceRow (state, newRow) {
       const table = state.tableList[state.currentTableNum]
       state.tableRows[table.name].forEach((row, index) => {
@@ -168,6 +171,7 @@ export default new Vuex.Store({
         }
       })
     },
+    // Вставка новой строки таблицы - устарело
     insertRow (state, newRow) {
       const table = state.tableList[state.currentTableNum]
       if (!state.tableRows[table.name]) state.tableRows[table.name] = []
@@ -178,6 +182,7 @@ export default new Vuex.Store({
       this.dispatch('selectTable', state.currentTableNum)
         .then(this.dispatch('selectPage', curPage))
     },
+    // Изменение СтрокНаСтраницу
     onChangePerPage (state, perPage) {
       state.currentTable.curPage = 1
       state.currentTable.perPage = +perPage
@@ -186,6 +191,7 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    // Уже авторизованы? - получим имя пользователя
     checkLogin ({ commit }) {
       commit('checkLogin')
     },
@@ -195,18 +201,19 @@ export default new Vuex.Store({
     logout ({ commit }) {
       commit('logout')
     },
-    addHotel ({ commit }, hotelName) {
-      commit('addHotel', hotelName)
-    },
+    // Выбор таблицы для просмотра/редактирования
     selectTable ({ commit }, tableNum) {
       commit('selectTable', tableNum)
     },
+    // Выбор страницы таблицы для просмотра/редактирования
     selectPage ({ commit }, page) {
       commit('selectPage', page)
     },
+    // Нажали Редактировать на строке таблицы
     onEditRow ({ commit, state }, id) {
       commit('onEditRow', id)
     },
+    // Сохраняем измененную строку таблицы
     putRow ({ commit, state }, row) {
       const newRow = { ...row, created_date: (new Date()), created_user_id: state.currentUser }
       request('PUT', state.serverURL + state.currentTable.name + '/' + row._id, newRow)
@@ -217,6 +224,7 @@ export default new Vuex.Store({
         })
         .catch(error => commit('showStatusBar', 'error: ' + error))
     },
+    // Вставляем строку в таблицу
     postRow ({ commit, state }, row) {
       const table = state.tableList[state.currentTableNum]
       const newRow = { ...row, created_date: (new Date()), created_user_id: state.currentUser }
@@ -227,23 +235,15 @@ export default new Vuex.Store({
         })
         .catch(error => commit('showStatusBar', 'error: ' + error))
     },
-    insertRow ({ commit, state }, newRow) {
-      const table = state.tableList[state.currentTableNum]
-      const tableRows = state.tableRows[table.name]
-      // Если есть id значит заменяем редактированную строку
-      if (newRow.id) {
-        commit('replaceRow', { ...newRow, created_date: (new Date()), created_user_id: state.currentUser })
-      } else { // Иначе запись новой строки
-        const id = tableRows && tableRows.length ? tableRows.slice(-1)[0].id + 1 : 1
-        commit('insertRow', { ...newRow, id, created_date: (new Date()), created_user_id: state.currentUser })
-      }
-    },
+    // Выбор страницы в Пагинаторе
     onSelectPage ({ commit, state }, page) {
       commit('selectPage', page)
     },
+    // Общий размер текущей таблицы
     countTableLength ({ commit }) {
       commit('countTableLength')
     },
+    // Изменили "СтрокНаСтраницу"
     onChangePerPage ({ commit, state }, perPage) {
       commit('onChangePerPage', perPage)
     }
