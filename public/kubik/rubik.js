@@ -1055,9 +1055,9 @@ var Rubik = /** @class */ (function () {
     };
     /**
      * Записываем ходы вращений для дальнейшей автосборки
-     * @param sideDirection
-     * @param pos
-     * @param rotNumber
+     * @param sideDirection - номер Стороны + направление вращения. Например: side0horizontal
+     * @param pos - номер слоя на этой стороне. Например side0horizontal 2 - значит нижний слой, 1 -  второй сверху, 0 - верхний
+     * @param rotNumber - сколько раз вращаем вправо/вверх. Если -1 то влево/вниз
      */
     Rubik.prototype.recordMoves = function (sideDirection, pos, rotNumber) {
         var len = this.rotRecords.length;
@@ -1110,7 +1110,10 @@ var Rubik = /** @class */ (function () {
         if (plus < current) {
             delta = 1;
         }
-        // цикл по предыдущим ходам
+        // цикл по предыдущим ходам !!!!! Очень важно !!!!
+        // Если, к примеру, на одной стороне подряд крутили в одну сторону два слоя
+        // то для оптимизированной сборки останется докрутить туда третий слой
+        // а значит смотреть на предыдущие ходы приходится уже с той стороны куда мы докрутили !!!!!!!!
         for (var i = 0; i < this.rotRecords.length; i++) {
             if (minus < current) {
                 switch (sideDirection) {
