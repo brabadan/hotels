@@ -39,10 +39,33 @@ module.exports = [
                 required: true,
             },
             about_room: String,
-            created_by: {
-                type: Schema.Types.ObjectId,
-                ref: 'users'
+        }
+    },
+    {
+        collection: 'item_models',
+        schema: {
+            name: {
+                type: String,
+                required: true
+            },
+            description: String,
+            image: {
             }
+        }
+    },
+    {
+        collection: 'images',
+        schema: {
+            image: {
+                type: Buffer,
+                required: true
+            },
+            mimeType: {
+                type: String,
+                required: true
+            },
+            md5: String,
+            description: String
         }
     }
 ];

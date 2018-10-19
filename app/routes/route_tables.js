@@ -3,19 +3,38 @@ function collectionProcess(req, res, err, result) {
     res.send({err, req: req.body, result})
 }
 
+function modifyRow(reqBody) {
+    const row = reqBody;
+    delete row._id;
+    delete row.updatedAt;
+    delete row.createdAt;
+    delete row.createdBy;
+    return row;
+}
+
 module.exports = function (app, mongoose) {
     const db = mongoose.connection;
+    const Schema = mongoose.Schema;
     const ObjectID = require('mongodb').ObjectID;
-    // const tables = require('../../tables');
     const structures = require('../../config/structures');
     const config = require('../../config/index');
 
-    // for (let table of tables) {
     for (let structure of structures) {
-        const collection = structure.collection.trim();
-        const modelSchema = mongoose.Schema(structure.schema, { timestamps: true });
+        const collection = structure.collection;
+        // Добавляем в Схему ссылку на создавшего Пользователя - createdBy
+        const fixedSchema = {
+            ...structure.schema,
+            createdBy: {
+                type: Schema.Types.ObjectId,
+                ref: 'users'
+            }
+        };
+        // Создаем МодельСхему с полями createdAt & updatedAt
+        const modelSchema = mongoose.Schema(fixedSchema, {timestamps: true});
+        // Создаем Модель коллекции по МодельСхеме
         const Model = mongoose.model(collection, modelSchema);
-        // контроль прав пользователя на таблицу
+
+        // !!! Контроль прав текущего пользователя на текущую коллекцию
         app.all(config.app_path + collection + '*', (req, res, next) => {
             if (structure.rightsRequired && req.session.user.rights.indexOf(structure.rightsRequired) < 0) {
                 // Нет необходимых прав
@@ -24,12 +43,16 @@ module.exports = function (app, mongoose) {
                 next();
             }
         });
+        // Добавление новой записи в Коллекцию
         app.post(config.app_path + collection, (req, res) => {
-            // db.collection(collection).insertOne
-            Model.create(req.body, (err, result) => {
+            const row = modifyRow(req.body);
+            // Фиксируем Пользователя, кто создает запись
+            row.createdBy = req.session.user._id;
+            Model.create(row, (err, result) => {
                 collectionProcess(req, res, err, result)
             })
         });
+        // Количество записей в Коллекции
         app.get(config.app_path + collection + '/count', (req, res) => {
             db.collection(collection)
                 .find()
@@ -37,6 +60,7 @@ module.exports = function (app, mongoose) {
                     collectionProcess(req, res, err, count)
                 })
         });
+        // Возвращаем массив всей Коллекции - для реляц. полей: rooms.hotel_id -> hotels
         app.get(config.app_path + collection + '/toarray', (req, res) => {
             db.collection(collection)
                 .find()
@@ -44,6 +68,7 @@ module.exports = function (app, mongoose) {
                     collectionProcess(req, res, err, result)
                 })
         });
+        // Возвращаем страницу Пагинации Коллекции
         app.get(config.app_path + collection + '/page/:page/perpage/:perpage', (req, res) => {
             const limit = +req.params.perpage;
             const skip = (req.params.page - 1) * limit;
@@ -55,23 +80,23 @@ module.exports = function (app, mongoose) {
                     collectionProcess(req, res, err, result);
                 });
         });
+        // Возвращаем запись Коллекции по _id
         app.get(config.app_path + collection + '/:id', (req, res) => {
             const where = {'_id': new ObjectID(req.params.id)};
             db.collection(collection).findOne(where, (err, item) => {
                 collectionProcess(req, res, err, item);
             })
         });
+        // Заменяем запись в Коллекции
         app.put(config.app_path + collection + '/:id', (req, res) => {
             const where = {'_id': new ObjectID(req.params.id)};
-            const row = req.body;
-            delete row._id;
-            delete row.updatedAt;
-            delete row.createdAt;
+            const row = modifyRow(req.body);
             // db.collection(collection).replaceOne
             Model.updateOne(where, row, (err, result) => {
                 collectionProcess(req, res, err, result);
             })
         });
+        // Удаляем запись в Коллекции - под вопросом
         app.delete(config.app_path + collection + '/:id', (req, res) => {
             const where = {'_id': new ObjectID(req.params.id)};
             db.collection(collection).remove(where, (err, result) => {

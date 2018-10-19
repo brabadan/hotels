@@ -5,12 +5,12 @@
     "rightsRequired": "A",
     "columns": [
       {
-        "name": "created_date",
+        "name": "createdAt",
         "type": "date",
         "readonly": true
       },
       {
-        "name": "created_user_id",
+        "name": "createdBy",
         "type": "number",
         "readonly": true
       },
@@ -34,12 +34,17 @@
     "name": "hotels",
     "columns": [
       {
-        "name": "created_date",
+        "name": "createdAt",
         "type": "date",
         "readonly": true
       },
       {
-        "name": "created_user_id",
+        "name": "updatedAt",
+        "type": "date",
+        "readonly": true
+      },
+      {
+        "name": "createdBy",
         "type": "number",
         "readonly": true
       },
@@ -69,7 +74,7 @@
         "readonly": true
       },
       {
-        "name": "created_user_id",
+        "name": "createdBy",
         "type": "number",
         "readonly": true
       },
@@ -90,6 +95,45 @@
         "name": "about_room",
         "type": "textarea",
         "about_column": "Уточняющая информация о комнате"
+      }
+    ]
+  },
+  {
+    "aboutTable": "Модели предметов",
+    "name": "item_models",
+    "columns": [
+      {
+        "name": "createdAt",
+        "type": "date",
+        "readonly": true
+      },
+      {
+        "name": "updatedAt",
+        "type": "date",
+        "readonly": true
+      },
+      {
+        "name": "createdBy",
+        "type": "number",
+        "readonly": true,
+        "link": {
+          "table": "users",
+          "keyField": "_id",
+          "valueField": "name"
+        }
+      },
+      {
+        "name": "name",
+        "type": "text"
+      },
+      {
+        "name": "description",
+        "type": "textarea",
+        "about_column": "Уточняющая информация о модели предмета"
+      },
+      {
+        "name": "photo",
+        "type": "image"
       }
     ]
   }

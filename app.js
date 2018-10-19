@@ -26,8 +26,11 @@ db.once('open', function () {
     }));
     // Включаем Аутентификацию
     require('./middleware/Auth')(app, db);
+    // Включаем images
+    require('./middleware/images')(app, db);
     // Включаем маршруты
     require('./app/routes')(app, mongoose);
+
     // Запускаем сервер
     app.listen(server_port, () => {
         console.log(new Date(), `listening on ${server_port} port`);
