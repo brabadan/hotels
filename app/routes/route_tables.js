@@ -43,10 +43,18 @@ module.exports = function (app, mongoose) {
                 next();
             }
         });
+
+        // Обработка картинок
+        if (collection === 'images') {
+            require('./images')(app, Model);
+
+            continue;
+        }
+
         // Добавление новой записи в Коллекцию
         app.post(config.app_path + collection, (req, res) => {
             const row = modifyRow(req.body);
-            // Фиксируем Пользователя, кто создает запись
+            // Добавляем в запись Пользователя, кто создает запись
             row.createdBy = req.session.user._id;
             Model.create(row, (err, result) => {
                 collectionProcess(req, res, err, result)

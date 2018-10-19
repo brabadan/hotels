@@ -56,7 +56,8 @@ module.exports = [
     {
         collection: 'images',
         schema: {
-            image: {
+            name: String,
+            data: {
                 type: Buffer,
                 required: true
             },
