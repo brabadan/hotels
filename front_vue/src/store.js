@@ -51,7 +51,7 @@ export default new Vuex.Store({
   mutations: {
     // Опрос сервера на продолжение авторизованной сессии. Если да - сервер возвращает нам имя пользователя
     checkLogin (state) {
-      request('GET', 'login')
+      request('GET', state.serverURL + 'login')
         .then(result => {
           if (result.res) state.username = result.res
         })
@@ -60,7 +60,7 @@ export default new Vuex.Store({
         })
     },
     logout (state) {
-      request('POST', 'logout')
+      request('POST', state.serverURL + 'logout')
       state.username = null
       state.currentTable.rows = []
     },
@@ -68,7 +68,7 @@ export default new Vuex.Store({
       if (!user.username || !user.password) {
         state.statusBar.text = 'Имя пользователя и пароль должны быть заполнены!!!'
       } else {
-        request('POST', 'login', user)
+        request('POST', state.serverURL + 'login', user)
           .then(result => {
             if (result.res && result.res.username) {
               state.statusBar.text = `Успешная авториация: ${result.res.username}`
@@ -215,8 +215,8 @@ export default new Vuex.Store({
     },
     // Сохраняем измененную строку таблицы
     putRow ({ commit, state }, row) {
-      const newRow = { ...row, created_date: (new Date()), created_user_id: state.currentUser }
-      request('PUT', state.serverURL + state.currentTable.name + '/' + row._id, newRow)
+      // const newRow = row
+      request('PUT', state.serverURL + state.currentTable.name + '/' + row._id, row)
         .then((result) => {
           // commit('putRow', result)
           commit('selectPage', state.currentTable.curPage)
@@ -227,8 +227,8 @@ export default new Vuex.Store({
     // Вставляем строку в таблицу
     postRow ({ commit, state }, row) {
       const table = state.tableList[state.currentTableNum]
-      const newRow = { ...row, created_date: (new Date()), created_user_id: state.currentUser }
-      request('POST', state.serverURL + table.name, newRow)
+      // const newRow = row // { ...row, created_date: (new Date()), created_user_id: state.currentUser }
+      request('POST', state.serverURL + table.name, row)
         .then((result) => {
           commit('selectPage', state.currentTable.curPage)
           commit('showStatusBar', 'result: ' + result.req)
@@ -246,6 +246,10 @@ export default new Vuex.Store({
     // Изменили "СтрокНаСтраницу"
     onChangePerPage ({ commit, state }, perPage) {
       commit('onChangePerPage', perPage)
+    },
+    // Показать текст в Статусной строки
+    showStatusText ({ commit }, text) {
+      commit('showStatusBar', text)
     }
   }
 })

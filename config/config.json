@@ -11,5 +11,6 @@
             "maxAge": null
         }
     },
-    "app_path": "/hotel_admin/"
+    "app_path": "/hotel_admin/",
+    "image_collection": "images"
 }

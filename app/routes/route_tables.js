@@ -44,22 +44,7 @@ module.exports = function (app, mongoose) {
             }
         });
 
-        // Обработка картинок
-        if (collection === 'images') {
-            require('./images')(app, Model);
 
-            continue;
-        }
-
-        // Добавление новой записи в Коллекцию
-        app.post(config.app_path + collection, (req, res) => {
-            const row = modifyRow(req.body);
-            // Добавляем в запись Пользователя, кто создает запись
-            row.createdBy = req.session.user._id;
-            Model.create(row, (err, result) => {
-                collectionProcess(req, res, err, result)
-            })
-        });
         // Количество записей в Коллекции
         app.get(config.app_path + collection + '/count', (req, res) => {
             db.collection(collection)
@@ -88,6 +73,29 @@ module.exports = function (app, mongoose) {
                     collectionProcess(req, res, err, result);
                 });
         });
+        // Удаляем запись в Коллекции - под вопросом
+        app.delete(config.app_path + collection + '/:id', (req, res) => {
+            const where = {'_id': new ObjectID(req.params.id)};
+            db.collection(collection).remove(where, (err, result) => {
+                collectionProcess(req, res, err, result);
+            })
+        });
+
+        // Обработка картинок
+        if (collection === config.image_collection) {
+            require('./images')(app, Model);
+            continue
+        }
+
+        // Добавление новой записи в Коллекцию
+        app.post(config.app_path + collection, (req, res) => {
+            const row = modifyRow(req.body);
+            // Добавляем в запись Пользователя, кто создает запись
+            row.createdBy = req.session.user._id;
+            Model.create(row, (err, result) => {
+                collectionProcess(req, res, err, result)
+            })
+        });
         // Возвращаем запись Коллекции по _id
         app.get(config.app_path + collection + '/:id', (req, res) => {
             const where = {'_id': new ObjectID(req.params.id)};
@@ -104,13 +112,6 @@ module.exports = function (app, mongoose) {
                 collectionProcess(req, res, err, result);
             })
         });
-        // Удаляем запись в Коллекции - под вопросом
-        app.delete(config.app_path + collection + '/:id', (req, res) => {
-            const where = {'_id': new ObjectID(req.params.id)};
-            db.collection(collection).remove(where, (err, result) => {
-                collectionProcess(req, res, err, result);
-            })
-        })
     }
 }
 ;

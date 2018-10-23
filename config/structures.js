@@ -24,7 +24,11 @@ module.exports = [
             created_by: {
                 type: Schema.Types.ObjectId,
                 ref: 'users'
-            }
+            },
+            images: [{
+                type: Schema.Types.ObjectId,
+                ref: 'images'
+            }]
         }
     },
     {
@@ -39,6 +43,10 @@ module.exports = [
                 required: true,
             },
             about_room: String,
+            images: [{
+                type: Schema.Types.ObjectId,
+                ref: 'images'
+            }]
         }
     },
     {
@@ -49,8 +57,27 @@ module.exports = [
                 required: true
             },
             description: String,
-            image: {
-            }
+            images: [{
+                type: Schema.Types.ObjectId,
+                ref: 'images'
+            }]
+        }
+    },
+    {
+        collection: 'items',
+        schema: {
+            item_model_id: {
+                type: Schema.Types.ObjectId,
+                ref: 'item_models'
+            },
+            description: {
+                type: String,
+                required: true
+            },
+            images: [{
+                type: Schema.Types.ObjectId,
+                ref: 'images'
+            }]
         }
     },
     {

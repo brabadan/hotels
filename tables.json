@@ -12,11 +12,17 @@
       {
         "name": "createdBy",
         "type": "number",
-        "readonly": true
+        "readonly": true,
+        "link": {
+          "table": "users",
+          "keyField": "_id",
+          "valueField": "name"
+        }
       },
       {
         "name": "name",
-        "type": "text"
+        "type": "text",
+        "required": true
       },
       {
         "name": "rights",
@@ -46,16 +52,28 @@
       {
         "name": "createdBy",
         "type": "number",
-        "readonly": true
+        "readonly": true,
+        "link": {
+          "table": "users",
+          "keyField": "_id",
+          "valueField": "name"
+        }
+
       },
       {
         "name": "name",
-        "type": "text"
+        "type": "text",
+        "required": true
       },
       {
         "name": "about_hotel",
         "type": "textarea",
         "about-column": "Уточняющая информация об Отеле"
+      },
+      {
+        "name": "images",
+        "type": "image",
+        "array": true
       }
     ]
   },
@@ -76,11 +94,16 @@
       {
         "name": "createdBy",
         "type": "number",
-        "readonly": true
+        "readonly": true,
+        "link": {
+          "table": "users",
+          "keyField": "_id",
+          "valueField": "name"
+        }
       },
       {
         "name": "hotel_id",
-        "type": "number",
+        "type": "text",
         "link": {
           "table": "hotels",
           "keyField": "_id",
@@ -89,18 +112,111 @@
       },
       {
         "name": "room_number",
-        "type": "text"
+        "type": "text",
+        "required": true
       },
       {
         "name": "about_room",
         "type": "textarea",
         "about_column": "Уточняющая информация о комнате"
+      },
+      {
+        "name": "images",
+        "type": "image",
+        "array": true
       }
     ]
   },
   {
     "aboutTable": "Модели предметов",
     "name": "item_models",
+    "columns": [
+      {
+        "name": "createdAt",
+        "type": "date",
+        "readonly": true
+      },
+      {
+        "name": "updatedAt",
+        "type": "date",
+        "readonly": true
+      },
+      {
+        "name": "createdBy",
+        "type": "text",
+        "readonly": true,
+        "link": {
+          "table": "users",
+          "keyField": "_id",
+          "valueField": "name"
+        }
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "description",
+        "type": "textarea",
+        "about_column": "Уточняющая информация о модели предмета"
+      },
+      {
+        "name": "images",
+        "type": "image",
+        "array": true
+      }
+    ]
+  },
+  {
+    "aboutTable": "Предметы",
+    "name": "items",
+    "columns": [
+      {
+        "name": "createdAt",
+        "type": "date",
+        "readonly": true
+      },
+      {
+        "name": "updatedAt",
+        "type": "date",
+        "readonly": true
+      },
+      {
+        "name": "createdBy",
+        "type": "text",
+        "readonly": true,
+        "link": {
+          "table": "users",
+          "keyField": "_id",
+          "valueField": "name"
+        }
+      },
+      {
+        "name": "item_model_id",
+        "type": "text",
+        "link": {
+          "table": "item_models",
+          "keyField": "_id",
+          "valueField": "name"
+        }
+      },
+      {
+        "name": "description",
+        "type": "textarea",
+        "about_column": "Уточняющая информация о предмете",
+        "required": true
+      },
+      {
+        "name": "images",
+        "type": "image",
+        "array": true
+      }
+    ]
+  },
+  {
+    "aboutTable": "Картинки",
+    "name": "images",
     "columns": [
       {
         "name": "createdAt",
@@ -124,15 +240,11 @@
       },
       {
         "name": "name",
-        "type": "text"
+        "type": "text",
+        "required": true
       },
       {
-        "name": "description",
-        "type": "textarea",
-        "about_column": "Уточняющая информация о модели предмета"
-      },
-      {
-        "name": "photo",
+        "name": "_id",
         "type": "image"
       }
     ]
