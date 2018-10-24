@@ -29,13 +29,26 @@
             >
                 <!-- При редактировании, показываем фотки только если не выбраны новые getFooterImageArr(column)-->
                 <div v-if="images.files.length === 0">
-                    <div v-for="(src, index) of $store.state.newRow[getCurrentTable.name][column.name]"
-                         class="image"
-                    >
-                        <img v-bind:src="'images/' + src"/>
-                        <div v-on:click="$store.state.newRow[getCurrentTable.name][column.name].splice(index, 1)"
-                             class="image-close"
-                        >X
+                    <!-- Если массив фото -->
+                    <div v-if="column.array">
+                        <div v-for="(src, index) of $store.state.newRow[getCurrentTable.name][column.name]"
+                             class="image"
+                        >
+                            <img v-bind:src="'images/' + src"/>
+                            <div v-on:click="$store.state.newRow[getCurrentTable.name][column.name].splice(index, 1)"
+                                 class="image-close"
+                            >X
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Если одиночное(не массив) фото-->
+                    <div v-else-if="$store.state.newRow[getCurrentTable.name][column.name]">
+                        <div class="image">
+                            <img v-bind:src="'images/' + $store.state.newRow[getCurrentTable.name][column.name]"/>
+                            <div v-on:click="$store.state.newRow[getCurrentTable.name][column.name].splice(index, 1)"
+                                 class="image-close"
+                            >X
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -207,6 +220,8 @@
       getNewRowField: function (column) {
         if (column.type === 'date' && this.getNewRow[column.name]) {
           return String(this.getNewRow[column.name]).slice(0, 10)
+        } else if (column.link) {
+          return column.linkList[this.getNewRow[column.name]]
         } else {
           return this.getNewRow[column.name]
         }

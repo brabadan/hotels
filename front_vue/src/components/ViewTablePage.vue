@@ -11,10 +11,13 @@
         <td v-for="column in getCurrentTable.columns"
             v-bind:key="row._id + '.' + column.name"
         >
-            <div v-if="column.type === 'image'">
-                <!--<img v-for="src of getImageArr(column, row)"-->
+            <div v-if="column.type === 'image' && column.array">
                 <img v-for="src of row[column.name]"
                      v-bind:src="'images/' + src"
+                >
+            </div>
+            <div v-else-if="column.type === 'image'">
+                <img v-bind:src="'images/' + row[column.name]"
                 >
             </div>
             <span v-else>
