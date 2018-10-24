@@ -218,13 +218,16 @@
 
       // Поле только для чтения
       getNewRowField: function (column) {
-        if (column.type === 'date' && this.getNewRow[column.name]) {
-          return String(this.getNewRow[column.name]).slice(0, 10)
-        } else if (column.link) {
-          return column.linkList[this.getNewRow[column.name]]
-        } else {
-          return this.getNewRow[column.name]
+        const row = this.getNewRow
+        if (!row[column.name]) return '' // Пустое поле
+        // Если поле-указатель, то возвращаем соответствующее значение
+        if (column.link && column.linkList) {
+          return column.linkList[row[column.name]] || 'not found :('
         }
+        if (column.type === 'date') {
+          return (row[column.name] + '').slice(0, 10)
+        }
+        return row[column.name]
       }
     }
   }
