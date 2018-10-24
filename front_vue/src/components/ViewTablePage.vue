@@ -12,7 +12,8 @@
             v-bind:key="row._id + '.' + column.name"
         >
             <div v-if="column.type === 'image'">
-                <img v-for="src of getImageSrcArr(column, row)"
+                <!--<img v-for="src of getImageArr(column, row)"-->
+                <img v-for="src of row[column.name]"
                      v-bind:src="'images/' + src"
                 >
             </div>
@@ -23,8 +24,7 @@
         <td>
             <!-- Справа кнопка Редактировать -->
             <button
-                    v-bind:data-id="row._id"
-                    v-on:click="onEditRow"
+                    v-on:click="onEditRow(row)"
             >
                 Редактировать
             </button>
@@ -34,6 +34,7 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   import { mapGetters } from 'vuex'
 
   export default {
@@ -45,16 +46,16 @@
       ])
     },
     methods: {
-      // Ввозвращаем массив путей к картинкам
-      getImageSrcArr (column, row) {
+      // Ввозвращаем массив Id картинок
+      getImageArr (column, row) {
         let images = row[column.name]
         if (images instanceof Array) return images
         if (images) return [images]
         return []
       },
       // Нажали кнопку Редактировать
-      onEditRow: function (e) {
-        this.$store.dispatch('onEditRow', e.target.dataset.id)
+      onEditRow: function (row) {
+        this.$store.commit('onEditRow', row)
       },
       // Значение ячейки таблицы
       getFieldData: function (column, row) {
@@ -65,11 +66,11 @@
         if (column.type === 'date') {
           return (row[column.name] + '').slice(0, 10)
         }
-        // if (column.type === 'image') {
-        //   return '<img src="http://127.0.0.1:8080/hotel_admin/images/5bc9e73a62847f3584abaa4e" />';
-        // }
         return row[column.name]
       }
+    },
+    components: {
+      Vue
     }
   }
 </script>

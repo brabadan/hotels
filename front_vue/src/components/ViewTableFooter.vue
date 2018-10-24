@@ -6,11 +6,12 @@
         <td v-for="column in getCurrentTable.columns"
             v-bind:key="column.name"
         >
-            <!-- Поле только для чтения -->
+            <!-- Поле только для чтения просто показываем без ввода -->
             <span v-if="column.readonly">
                         {{ getNewRowField(column) }}
                     </span>
-            <!-- Поле-ссылка на ключ другой таблицы -->
+
+            <!-- Поле-ссылка на ключ другой таблицы - делаем выбор по значеням соответств. таблицы-->
             <select v-else-if="column.link"
                     v-model="$store.state.newRow[getCurrentTable.name][column.name]"
             >
@@ -21,29 +22,41 @@
                     {{ value }}
                 </option>
             </select>
+
             <!-- Поле Image -->
             <div v-else-if="column.type === 'image'"
-                 class="image"
+                 class="image-list"
             >
+                <!-- При редактировании, показываем фотки только если не выбраны новые getFooterImageArr(column)-->
                 <div v-if="images.files.length === 0">
-                    <img v-for="src of getImageSrcArr(column)"
-                         v-bind:src="'images/' + src"
-                    />
+                    <div v-for="(src, index) of $store.state.newRow[getCurrentTable.name][column.name]"
+                         class="image"
+                    >
+                        <img v-bind:src="'images/' + src"/>
+                        <div v-on:click="$store.state.newRow[getCurrentTable.name][column.name].splice(index, 1)"
+                             class="image-close"
+                        >X
+                        </div>
+                    </div>
                 </div>
+                <!-- Выбираем новые фотки -->
                 <div class="input-files">
                     <input type="file"
                            v-on:change="onChangeFiles"
                            v-bind:multiple="column.array"
                     />
+                    <!-- Очистить выбор -->
                     <button v-on:click="clearInputFiles"
                             v-if="images.files.length > 0"
                     >X
                     </button>
                 </div>
+                <!-- Показываем выбранные фотки -->
                 <img v-for="file of images.files"
                      v-bind:src="file2Src(file)"
                 />
             </div>
+
             <!-- Обычное текстовое поле -->
             <input v-else-if="column.type !== 'textarea'"
                    v-bind:type="column.type"
@@ -81,7 +94,6 @@
         images: {
           input: HTMLInputElement,
           files: [],
-          columnName: '',
           array: false
         }
       }
@@ -123,16 +135,6 @@
         }
       },
 
-      // Ввозвращаем массив путей к картинкам
-      getImageSrcArr (column) {
-        if (column.array) this.images.array = true
-        this.images.columnName = column.name
-        let images = this.getNewRow[column.name]
-        if (images instanceof Array) return images
-        if (images) return [images]
-        return []
-      },
-
       // Название кнопки - Сохранить/Изменить
       buttonName: function () {
         return (this.getNewRow && this.getNewRow['_id']) ? 'Изм.' : 'Доб.'
@@ -143,7 +145,10 @@
         const table = this.getCurrentTable
         const newRow = this.getNewRow
         let err = ''
-        table.columns.forEach(column => { // Проверяем обязательные поля на заполнение
+        let imageColumnName = ''
+        table.columns.forEach(column => {
+          if (column.type === 'image') imageColumnName = column.name
+          // Проверяем обязательные поля на заполнение
           if (!column.readonly && column.required && !newRow[column.name]) {
             if (!err) err = 'Не заполнено обязательное поле:'
             err += ' ' + column.name
@@ -164,7 +169,7 @@
           request('POST', this.$store.state.serverURL + 'images/', fd, isFile)
             .then(res => {
               // Сохраняем массив картинок в соответствующем поле
-              newRow[this.images.columnName] = res.res
+              newRow[imageColumnName] = res.res
               this.sendNewRow(newRow)
             })
             .catch(err => {
@@ -229,7 +234,25 @@
         height: 5em
 
     div.image
+        display inline-block;
+        position relative;
+
+    .image-close
+        position absolute
+        top 2px
+        right 2px
+        width 1em
+        height 1em
+        background bisque
+        opacity 0.4
+
+    .image-close:hover
+        opacity 1
+        cursor pointer
+
+    div.image-list
         display table-caption
+
     div.input-files
         display inline-flex
 </style>

@@ -17,3 +17,4 @@ vm.$store.state.tableList = tables
 vm.$store.state.tableList.forEach(table => { Vue.set(vm.$store.state.newRow, table.name, {}) })
 vm.$store.dispatch('checkLogin')
   .then(vm.$store.dispatch('selectTable', 0))
+console.dir(vm)

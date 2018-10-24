@@ -24,7 +24,6 @@ export default new Vuex.Store({
       text: 'statusBar', // Текст статусбара
       hidden: false // Невидимость/видимость
     },
-    currentTableNum: 0, // Номер текущей таблицы - устарел
     currentUser: 0, // Номер пользователя - устарел
     newRow: {} // Здесь хранятся строки ввода данных для таблиц
   },
@@ -35,8 +34,8 @@ export default new Vuex.Store({
     getTableRows: (state) => {
       return state.tableRows
     },
-    getCurrentTableNum: (state) => {
-      return state.currentTableNum
+    getCurrentTableNum: (state) => { // Устарело
+      return state.currentTable.num
     },
     getCurrentTable: (state) => {
       return state.currentTable
@@ -83,33 +82,36 @@ export default new Vuex.Store({
           })
       }
     },
+
     showStatusBar (state, text) {
       state.statusBar = { text, hidden: false }
     },
+
     // Выбор таблицы для просмотра и редактирования
     selectTable (state, tableNum) {
       const num = +tableNum
-      state.currentTableNum = num
       const name = state.tableList[num].name
       const columns = state.tableList[num].columns
       state.currentTable = { ...state.currentTable, num, name, curPage: 1, columns }
       let requests = []
       for (let i = 0; i < columns.length; i++) {
         const link = columns[i].link
+        // Если поле-ссылка, запрашиваем данные соответствующей таблицы
         if (link) {
-          const linkedList = {}
+          const linkList = {} // Объект типа { id: name }
           let newReq = request('GET', state.serverURL + link.table + '/toarray')
             .then(res => {
               if (res.result && res.result instanceof Array) {
                 res.result.forEach(r => {
-                  linkedList[r[link.keyField]] = r[link.valueField]
+                  linkList[r[link.keyField]] = r[link.valueField]
                 })
               }
-              Vue.set(state.currentTable.columns[i], 'linkList', linkedList)
+              return Vue.set(state.currentTable.columns[i], 'linkList', linkList)
             })
           requests.push(newReq)
         }
       }
+      // Если есть поля-ссылки, ждём обработки их запросов
       if (requests.length > 0) {
         Promise.all(requests)
           .then(this.dispatch('selectPage', 1))
@@ -120,6 +122,7 @@ export default new Vuex.Store({
         this.dispatch('selectPage', 1)
       }
     },
+
     // Выбор страницы Пагинатора
     selectPage (state, page) {
       state.statusBar.text = `Loading page ${page} data...`
@@ -139,6 +142,7 @@ export default new Vuex.Store({
           state.statusBar.text = `error: ${error} when loading page ${page}`
         })
     },
+
     // Получить общий размер таблицы
     countTableLength (state) {
       const name = state.currentTable.name
@@ -149,20 +153,16 @@ export default new Vuex.Store({
           state.statusBar.text = res
         })
     },
+
     // Нажали редактировать строку таблицы - записываем её в newRow
-    onEditRow (state, id) {
-      state.currentTable.rows.forEach((row, index) => {
-        if (row._id === id) {
-          state.currentTable.columns.forEach(column => {
-            Vue.set(state.newRow[state.currentTable.name], column.name, row[column.name])
-          })
-          Vue.set(state.newRow[state.currentTable.name], '_id', row._id)
-        }
-      })
+    onEditRow (state, row) {
+      const newRow = JSON.parse(JSON.stringify(row))
+      Vue.set(state.newRow, [state.currentTable.name], newRow)
     },
+
     // Сохранение отредактированной строки таблицы
     replaceRow (state, newRow) {
-      const table = state.tableList[state.currentTableNum]
+      const table = state.tableList[state.currentTable.num]
       state.tableRows[table.name].forEach((row, index) => {
         if (+row.id === +newRow.id) {
           Object.keys(newRow).forEach(key => {
@@ -171,23 +171,27 @@ export default new Vuex.Store({
         }
       })
     },
-    // Вставка новой строки таблицы - устарело
-    insertRow (state, newRow) {
-      const table = state.tableList[state.currentTableNum]
-      if (!state.tableRows[table.name]) state.tableRows[table.name] = []
-      state.tableRows[table.name].push(newRow)
-      state.currentTable.length++
-      localStorage.setItem('tableRows', JSON.stringify(state.tableRows))
-      let curPage = state.currentTable.curPage
-      this.dispatch('selectTable', state.currentTableNum)
-        .then(this.dispatch('selectPage', curPage))
-    },
+
     // Изменение СтрокНаСтраницу
     onChangePerPage (state, perPage) {
       state.currentTable.curPage = 1
       state.currentTable.perPage = +perPage
-      this.dispatch('selectTable', state.currentTableNum)
+      this.dispatch('selectTable', state.currentTable.num)
         .then(this.dispatch('selectPage', 1))
+    },
+
+    // Удалить картинку в строке редактирования таблицы
+    delNewRowImage (state, { imageId, columnName }) {
+      const tableName = state.currentTable.name
+      let images = state.newRow[tableName][columnName]
+      // Если массив картинок - удаляем именно эту
+      if (images instanceof Array) {
+        images.splice(images.indexOf(imageId), 1)
+        // Иначе очищаем единственную запись
+      } else {
+        images = null
+      }
+      Object.assign(state.newRow[tableName][columnName], images)
     }
   },
   actions: {
@@ -201,6 +205,11 @@ export default new Vuex.Store({
     logout ({ commit }) {
       commit('logout')
     },
+    // Удалить картинку в строке редактирования записи
+    delNewRowImage ({ commit }, { imageId, columnName }) {
+      console.log(imageId, columnName)
+      commit('delNewRowImage', { imageId, columnName })
+    },
     // Выбор таблицы для просмотра/редактирования
     selectTable ({ commit }, tableNum) {
       commit('selectTable', tableNum)
@@ -208,10 +217,6 @@ export default new Vuex.Store({
     // Выбор страницы таблицы для просмотра/редактирования
     selectPage ({ commit }, page) {
       commit('selectPage', page)
-    },
-    // Нажали Редактировать на строке таблицы
-    onEditRow ({ commit, state }, id) {
-      commit('onEditRow', id)
     },
     // Сохраняем измененную строку таблицы
     putRow ({ commit, state }, row) {
@@ -226,7 +231,7 @@ export default new Vuex.Store({
     },
     // Вставляем строку в таблицу
     postRow ({ commit, state }, row) {
-      const table = state.tableList[state.currentTableNum]
+      const table = state.tableList[state.currentTable.num]
       // const newRow = row // { ...row, created_date: (new Date()), created_user_id: state.currentUser }
       request('POST', state.serverURL + table.name, row)
         .then((result) => {
