@@ -19,7 +19,7 @@
                 >
             </div>
             <!-- Одна картинка -->
-            <div v-else-if="column.type === 'image'">
+            <div v-else-if="column.type === 'image' && row[column.name]">
                 <img v-bind:src="'images/' + row[column.name]"
                 >
             </div>

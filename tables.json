@@ -126,9 +126,8 @@
         "array": true
       },
       {
-        "name": "photos",
-        "type": "image",
-        "array": true
+        "name": "photo",
+        "type": "image"
       }
     ]
   },

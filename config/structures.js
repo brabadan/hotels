@@ -47,10 +47,10 @@ module.exports = [
                 type: Schema.Types.ObjectId,
                 ref: 'images'
             }],
-            photos: [{
+            photo: {
                 type: Schema.Types.ObjectId,
                 ref: 'images'
-            }]
+            }
         }
     },
     {

@@ -46,7 +46,7 @@
                     <div v-else-if="getNewRow[column.name]">
                         <div class="image">
                             <img v-bind:src="'images/' + $store.state.newRow[getCurrentTable.name][column.name]"/>
-                            <div v-on:click="$store.state.newRow[getCurrentTable.name][column.name]=''"
+                            <div v-on:click="$store.state.newRow[getCurrentTable.name][column.name] = null"
                                  class="image-close"
                             >X
                             </div>
