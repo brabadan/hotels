@@ -128,8 +128,8 @@ export default {
       for (let column of this.getCurrentTable.columns) {
         if (column.type === 'image' && !this.imagesFiles[column.name]) {
           Vue.set(this.imagesFiles, [column.name], [])
-          // this.imagesInput[column.name] = HTMLInputElement
-          // this.imagesArray[column.name] = false
+          Vue.set(this.imagesInput, [column.name], HTMLInputElement)
+          Vue.set(this.imagesArray, [column.name], false)
         }
       }
       return this.getCurrentTable.columns
