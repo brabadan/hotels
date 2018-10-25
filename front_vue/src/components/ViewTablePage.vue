@@ -11,15 +11,19 @@
         <td v-for="column in getCurrentTable.columns"
             v-bind:key="row._id + '.' + column.name"
         >
+            <!-- Массив картинок -->
             <div v-if="column.type === 'image' && column.array">
-                <img v-for="src of row[column.name]"
+                <img v-for="(src, index) of row[column.name]"
+                     v-bind:key="index"
                      v-bind:src="'images/' + src"
                 >
             </div>
+            <!-- Одна картинка -->
             <div v-else-if="column.type === 'image'">
                 <img v-bind:src="'images/' + row[column.name]"
                 >
             </div>
+            <!-- Обычное поле -->
             <span v-else>
             {{ getFieldData(column, row) }}
                 </span>
@@ -37,45 +41,45 @@
 </template>
 
 <script>
-  import Vue from 'vue'
-  import { mapGetters } from 'vuex'
+import Vue from 'vue'
+import { mapGetters } from 'vuex'
 
-  export default {
-    name: 'ViewTablePage',
-    computed: {
-      ...mapGetters([
-        'getCurrentTable',
-        'getNewRow'
-      ])
+export default {
+  name: 'ViewTablePage',
+  computed: {
+    ...mapGetters([
+      'getCurrentTable',
+      'getNewRow'
+    ])
+  },
+  methods: {
+    // Ввозвращаем массив Id картинок
+    getImageArr (column, row) {
+      let images = row[column.name]
+      if (images instanceof Array) return images
+      if (images) return [images]
+      return []
     },
-    methods: {
-      // Ввозвращаем массив Id картинок
-      getImageArr (column, row) {
-        let images = row[column.name]
-        if (images instanceof Array) return images
-        if (images) return [images]
-        return []
-      },
-      // Нажали кнопку Редактировать
-      onEditRow: function (row) {
-        this.$store.commit('onEditRow', row)
-      },
-      // Значение ячейки таблицы
-      getFieldData: function (column, row) {
-        // Если поле-указатель, то возвращаем соответствующее значение
-        if (column.link && column.linkList) {
-          return column.linkList[row[column.name]] || 'not found :('
-        }
-        if (column.type === 'date') {
-          return (row[column.name] + '').slice(0, 10)
-        }
-        return row[column.name]
+    // Нажали кнопку Редактировать
+    onEditRow: function (row) {
+      this.$store.commit('onEditRow', row)
+    },
+    // Значение ячейки таблицы
+    getFieldData: function (column, row) {
+      // Если поле-указатель, то возвращаем соответствующее значение
+      if (column.link && column.linkList) {
+        return column.linkList[row[column.name]] || 'not found :('
       }
-    },
-    components: {
-      Vue
+      if (column.type === 'date') {
+        return (row[column.name] + '').slice(0, 10)
+      }
+      return row[column.name]
     }
+  },
+  components: {
+    Vue
   }
+}
 </script>
 
 <style scoped lang="stylus">

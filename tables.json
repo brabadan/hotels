@@ -124,6 +124,11 @@
         "name": "images",
         "type": "image",
         "array": true
+      },
+      {
+        "name": "photos",
+        "type": "image",
+        "array": true
       }
     ]
   },

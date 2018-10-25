@@ -46,6 +46,10 @@ module.exports = [
             images: [{
                 type: Schema.Types.ObjectId,
                 ref: 'images'
+            }],
+            photos: [{
+                type: Schema.Types.ObjectId,
+                ref: 'images'
             }]
         }
     },
