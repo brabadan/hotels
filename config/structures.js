@@ -74,6 +74,10 @@ module.exports = [
                 type: Schema.Types.ObjectId,
                 ref: 'item_models'
             },
+            room_id: {
+                type: Schema.Types.ObjectId,
+                ref: 'rooms'
+            },
             description: {
                 type: String,
                 required: true
@@ -98,6 +102,11 @@ module.exports = [
             },
             md5: String,
             description: String
+        },
+        virtuals: {
+            image: function () {
+                return this._id
+            }
         }
     }
 ];

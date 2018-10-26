@@ -103,7 +103,10 @@ export default new Vuex.Store({
             .then(res => {
               if (res.result && res.result instanceof Array) {
                 res.result.forEach(r => {
-                  linkList[r[link.keyField]] = r[link.valueField]
+                  linkList[r[link.keyField]] = {
+                    value: r[link.valueField],
+                    image: r[link.imageField]
+                  }
                 })
               }
               return Vue.set(state.currentTable.columns[i], 'linkList', linkList)

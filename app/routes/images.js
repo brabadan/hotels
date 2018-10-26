@@ -71,7 +71,7 @@ module.exports = function (app, Model) {
                 })
         })
     }
-//todo test
+//todo virtual
 
     // Загрузка картинок с проверкой MD5
     function uploadImages(images) {

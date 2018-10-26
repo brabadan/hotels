@@ -107,7 +107,8 @@
         "link": {
           "table": "hotels",
           "keyField": "_id",
-          "valueField": "name"
+          "valueField": "name",
+          "imageField": "images"
         }
       },
       {
@@ -124,10 +125,6 @@
         "name": "images",
         "type": "image",
         "array": true
-      },
-      {
-        "name": "photo",
-        "type": "image"
       }
     ]
   },
@@ -202,7 +199,18 @@
         "link": {
           "table": "item_models",
           "keyField": "_id",
-          "valueField": "name"
+          "valueField": "name",
+          "imageField": "images"
+        }
+      },
+      {
+        "name": "room_id",
+        "type": "text",
+        "link": {
+          "table": "rooms",
+          "keyField": "_id",
+          "valueField": "room_number",
+          "imageField": "images"
         }
       },
       {
@@ -248,8 +256,9 @@
         "required": true
       },
       {
-        "name": "_id",
-        "type": "image"
+        "name": "image",
+        "type": "image",
+        "readonly": true
       }
     ]
   }

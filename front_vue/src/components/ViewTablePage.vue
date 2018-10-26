@@ -5,9 +5,9 @@
         v-bind:key="row._id"
         v-bind:class="getNewRow._id === row._id ? 'onedit' : ''"
     >
-        <!-- Рассчитываем номер строки в таблице -->
+        <!-- Рассчитываем и выводим номер строки в таблице -->
         <td>{{ index + 1 + (getCurrentTable.curPage -1) * getCurrentTable.perPage }}</td>
-        <!-- Остальные столбцы -->
+        <!-- Основные столбцы -->
         <td v-for="column in getCurrentTable.columns"
             v-bind:key="row._id + '.' + column.name"
         >
@@ -23,9 +23,24 @@
                 <img v-bind:src="'images/' + row[column.name]"
                 >
             </div>
+            <!-- Поле-ссылка  = link -->
+            <div v-else-if="column.link">
+                <!-- Если массив картинок -->
+                <div v-if="column.link.imageField && (getLinkImage(column, row) instanceof Array)"
+                     class="link-image-array"
+                >
+                    <img v-for="(src, index) of getLinkImage(column, row)"
+                         v-bind:key="index"
+                         v-bind:src="'images/' + src"
+                    >
+                </div>
+                <img v-else-if="column.link.imageField"
+                     v-bind:src="'images/' + getLinkImage(column, row)">
+                <span>{{ getLinkValue(column, row) }}</span>
+            </div>
             <!-- Обычное поле -->
             <span v-else>
-            {{ getFieldData(column, row) }}
+            {{ getLinkValue(column, row) }}
                 </span>
         </td>
         <td>
@@ -64,11 +79,19 @@ export default {
     onEditRow: function (row) {
       this.$store.commit('onEditRow', row)
     },
-    // Значение ячейки таблицы
-    getFieldData: function (column, row) {
+    // Значение link-image
+    getLinkImage: function (column, row) {
       // Если поле-указатель, то возвращаем соответствующее значение
-      if (column.link && column.linkList) {
-        return column.linkList[row[column.name]] || 'not found :('
+      if (column.link && column.linkList && column.linkList[row[column.name]]) {
+        return column.linkList[row[column.name]].image || 'not found :('
+      }
+      return 'not found :('
+    },
+    // Значение link-таблицы
+    getLinkValue: function (column, row) {
+      // Если поле-указатель, то возвращаем соответствующее значение
+      if (column.link && column.linkList && column.linkList[row[column.name]]) {
+        return column.linkList[row[column.name]].value || 'not found :('
       }
       if (column.type === 'date') {
         return (row[column.name] + '').slice(0, 10)
@@ -103,4 +126,9 @@ export default {
     img
         width 5em
         height: 5em
+    span
+        display block
+
+    .link-image-array
+        display: inline-flex;
 </style>

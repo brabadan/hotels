@@ -1025,14 +1025,15 @@ var Rubik = /** @class */ (function () {
         }
     };
     /**
-     * Вращаем сторону (по/против часовой) по заданной формуле
+     * Вращаем грань (по/против часовой) по заданной формуле
      * @param side - сторона кубика
      * @param xy2xy - формула вращения
      */
     Rubik.prototype.rotateSide = function (side, xy2xy) {
         var _a;
         for (var y = 0; y < Math.floor(this.length / 2); y++) { // Идем слоями сверху к центру
-            for (var x = 1 + y; x < this.length - y; x++) { // идем слева направо внутри очередного подквадратика стороны
+            for (var x = 1 + y; x < this.length - y; x++) { // идем слева направо внутри очередного подквадрата грани
+                // Определяем симметричные(по вращению) квадратики
                 var _b = xy2xy(x, y), x1 = _b[0], y1 = _b[1];
                 var _c = xy2xy(x1, y1), x2 = _c[0], y2 = _c[1];
                 var _d = xy2xy(x2, y2), x3 = _d[0], y3 = _d[1];
@@ -1041,14 +1042,20 @@ var Rubik = /** @class */ (function () {
             }
         }
     };
-    // Вращем грань side копии кубика вправо - по часовой
+    /**
+     * Вращаем грань копии кубика вправо - по часовой
+     * @param sideNumber - номер грани
+     */
     Rubik.prototype.rotateSideRight = function (sideNumber) {
         var _this = this;
         this.side2CopySide(sideNumber); // вращаемые квадратики привязываем к копии кубика
         var xy2xy = function (x, y) { return [y, _this.length - x - 1]; }; // Формула вращения по часовой стрелке
         this.rotateSide(this.kvadrArr[sideNumber], xy2xy); // Вращаем грань
     };
-    // Вращем грань side копии кубика влево - против часовой
+    /**
+     * Вращем грань side копии кубика влево - против часовой
+     * @param sideNumber
+     */
     Rubik.prototype.rotateSideLeft = function (sideNumber) {
         var _this = this;
         this.side2CopySide(sideNumber); // привязываем квадратики грани к копии кубика (для вращения)

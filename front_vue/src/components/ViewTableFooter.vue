@@ -19,7 +19,7 @@
                         v-bind:key="key"
                         v-bind:value="key"
                 >
-                    {{ value }}
+                    {{ value.value }}
                 </option>
             </select>
 
@@ -262,8 +262,8 @@ export default {
       const row = this.getNewRow
       if (!row[column.name]) return '' // Пустое поле
       // Если поле-указатель, то возвращаем соответствующее значение
-      if (column.link && column.linkList) {
-        return column.linkList[row[column.name]] || 'not found :('
+      if (column.link && column.linkList && column.linkList[row[column.name]]) {
+        return column.linkList[row[column.name]].value || 'not found :('
       }
       if (column.type === 'date') {
         return (row[column.name] + '').slice(0, 10)
@@ -283,6 +283,9 @@ export default {
 
     input[type="number"]
         width 6em
+
+    input[type="file"]
+        font-size: xx-small;
 
     td
         background-color antiquewhite

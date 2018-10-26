@@ -1105,13 +1105,14 @@ export class Rubik {
     }
 
     /**
-     * Вращаем сторону (по/против часовой) по заданной формуле
+     * Вращаем грань (по/против часовой) по заданной формуле
      * @param side - сторона кубика
      * @param xy2xy - формула вращения
      */
     rotateSide(side, xy2xy) {
         for (let y = 0; y < Math.floor(this.length / 2); y++) { // Идем слоями сверху к центру
-            for (let x = 1 + y; x < this.length - y; x++) { // идем слева направо внутри очередного подквадратика стороны
+            for (let x = 1 + y; x < this.length - y; x++) { // идем слева направо внутри очередного подквадрата грани
+                // Определяем симметричные(по вращению) квадратики
                 let [x1, y1] = xy2xy(x, y);
                 let [x2, y2] = xy2xy(x1, y1);
                 let [x3, y3] = xy2xy(x2, y2);
@@ -1121,14 +1122,20 @@ export class Rubik {
         }
     }
 
-    // Вращем грань side копии кубика вправо - по часовой
+    /**
+     * Вращаем грань копии кубика вправо - по часовой
+     * @param sideNumber - номер грани
+     */
     rotateSideRight(sideNumber: number) {
         this.side2CopySide(sideNumber); // вращаемые квадратики привязываем к копии кубика
         let xy2xy = (x, y) => [y, this.length - x - 1]; // Формула вращения по часовой стрелке
         this.rotateSide(this.kvadrArr[sideNumber], xy2xy); // Вращаем грань
     }
 
-    // Вращем грань side копии кубика влево - против часовой
+    /**
+     * Вращем грань side копии кубика влево - против часовой
+     * @param sideNumber
+     */
     rotateSideLeft(sideNumber: number) {
         this.side2CopySide(sideNumber); // привязываем квадратики грани к копии кубика (для вращения)
         let xy2xy = (x, y) => [this.length - y - 1, x]; // Формула вращения против часовой стрелки

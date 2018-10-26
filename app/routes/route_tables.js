@@ -30,7 +30,17 @@ module.exports = function (app, mongoose) {
             }
         };
         // Создаем МодельСхему с полями createdAt & updatedAt
-        const modelSchema = mongoose.Schema(fixedSchema, {timestamps: true});
+        const modelSchema = new mongoose.Schema(fixedSchema, {timestamps: true});
+        // Добавить в схему виртуальные поля
+        if (structure.virtuals) {
+            modelSchema.set('toObject', {virtuals: true});
+            modelSchema.set('toJSON', {virtuals: true});
+
+            Object.keys(structure.virtuals).forEach(fieldName => {
+                const func = structure.virtuals[fieldName];
+                modelSchema.virtual(fieldName).get(func);
+            });
+        }
         // Создаем Модель коллекции по МодельСхеме
         const Model = mongoose.model(collection, modelSchema);
 
@@ -65,11 +75,13 @@ module.exports = function (app, mongoose) {
         app.get(config.app_path + collection + '/page/:page/perpage/:perpage', (req, res) => {
             const limit = +req.params.perpage;
             const skip = (req.params.page - 1) * limit;
-            db.collection(collection)
+            // db.collection(collection)
+            Model
                 .find({})
                 .skip(skip)
                 .limit(limit)
-                .toArray((err, result) => {
+                // .toArray((err, result) => {
+                .exec((err, result) => {
                     collectionProcess(req, res, err, result);
                 });
         });
