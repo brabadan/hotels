@@ -653,7 +653,7 @@ var Rubik = /** @class */ (function () {
         this.el.setAttribute('style', this.kubikStyle());
     };
     /**
-     * Возвращает текущий стиль для Кубика
+     * Возвращает текущий CSS стиль для Кубика
      */
     Rubik.prototype.kubikStyle = function () {
         // style += 'margin-left: '+this.sideSize/3+'px; margin-top: '+this.sideSize/1.7+'px; ';
@@ -702,6 +702,7 @@ var Rubik = /** @class */ (function () {
     // вращение слоя кубика - от квадратика по направлению
     Rubik.prototype.rotateLayer = function (kvadratik, direction) {
         var _this = this;
+        // переводим клик по квадратику во вращение слоя либо на 0 стороне(спереди), либо на 5 стороне(сверху)
         switch (kvadratik.sideNumber) {
             case 0:
                 switch (direction) {
@@ -993,7 +994,7 @@ var Rubik = /** @class */ (function () {
             this.rotateSideLeft(4);
         }
     };
-    // полосу y на 0 грани (спереди) вправо
+    // полосу (значение(y) считаем сверху вниз) на 0 грани (спереди) вправо
     Rubik.prototype.moveSide0Right = function (y) {
         this.recordMoves('side0horizontal', y, 1);
         for (var x = 0; x < this.length; x++) {
@@ -1015,43 +1016,44 @@ var Rubik = /** @class */ (function () {
             this.rotateSideRight(4);
         }
     };
-    // при вращении грани side копии кубика вправо - по часовой
-    Rubik.prototype.rotateSideRight = function (side) {
-        // вращаемые квадратики привязываем к копии кубика
+    // вращаемые квадратики привязываем к копии кубика (для вращения)
+    Rubik.prototype.side2CopySide = function (sideNumber) {
         for (var x = 0; x < this.length; x++) {
             for (var y = 0; y < this.length; y++) {
-                this.copySides[side].appendChild(this.kvadrArr[side][x][y].el);
-            }
-        }
-        // привязываем квадратики к массиву в те позиции, которые будут после вращения - для нормализации
-        for (var y = 0; y < Math.round(this.length / 2); y++) {
-            for (var i = 1 + y; i < this.length - y; i++) {
-                var kvadr = this.kvadrArr[side][i][y];
-                this.kvadrArr[side][i][y] = this.kvadrArr[side][y][this.length - i - 1];
-                this.kvadrArr[side][y][this.length - i - 1] = this.kvadrArr[side][this.length - i - 1][this.length - 1 - y];
-                this.kvadrArr[side][this.length - i - 1][this.length - 1 - y] = this.kvadrArr[side][this.length - 1 - y][i];
-                this.kvadrArr[side][this.length - 1 - y][i] = kvadr;
+                this.copySides[sideNumber].appendChild(this.kvadrArr[sideNumber][x][y].el);
             }
         }
     };
-    // при вращении грани side копии кубика влево - против часовой
-    Rubik.prototype.rotateSideLeft = function (side) {
-        // привязываем квадратики грани к копии кубика (для вращения)
-        for (var x = 0; x < this.length; x++) {
-            for (var y = 0; y < this.length; y++) {
-                this.copySides[side].appendChild(this.kvadrArr[side][x][y].el);
+    /**
+     * Вращаем сторону (по/против часовой) по заданной формуле
+     * @param side - сторона кубика
+     * @param xy2xy - формула вращения
+     */
+    Rubik.prototype.rotateSide = function (side, xy2xy) {
+        var _a;
+        for (var y = 0; y < Math.floor(this.length / 2); y++) { // Идем слоями сверху к центру
+            for (var x = 1 + y; x < this.length - y; x++) { // идем слева направо внутри очередного подквадратика стороны
+                var _b = xy2xy(x, y), x1 = _b[0], y1 = _b[1];
+                var _c = xy2xy(x1, y1), x2 = _c[0], y2 = _c[1];
+                var _d = xy2xy(x2, y2), x3 = _d[0], y3 = _d[1];
+                // Четыре симметричных (для поворота) квадратика переносим на повернутую позицию
+                _a = [side[x1][y1], side[x2][y2], side[x3][y3], side[x][y]], side[x][y] = _a[0], side[x1][y1] = _a[1], side[x2][y2] = _a[2], side[x3][y3] = _a[3];
             }
         }
-        // привязываем квадратики к массиву в те позиции, которые будут после вращения - для нормализации
-        for (var y = 0; y < Math.round(this.length / 2); y++) {
-            for (var i = 1 + y; i < this.length - y; i++) {
-                var kvadr = this.kvadrArr[side][this.length - 1 - y][i];
-                this.kvadrArr[side][this.length - 1 - y][i] = this.kvadrArr[side][this.length - i - 1][this.length - 1 - y];
-                this.kvadrArr[side][this.length - i - 1][this.length - 1 - y] = this.kvadrArr[side][y][this.length - i - 1];
-                this.kvadrArr[side][y][this.length - i - 1] = this.kvadrArr[side][i][y];
-                this.kvadrArr[side][i][y] = kvadr;
-            }
-        }
+    };
+    // Вращем грань side копии кубика вправо - по часовой
+    Rubik.prototype.rotateSideRight = function (sideNumber) {
+        var _this = this;
+        this.side2CopySide(sideNumber); // вращаемые квадратики привязываем к копии кубика
+        var xy2xy = function (x, y) { return [y, _this.length - x - 1]; }; // Формула вращения по часовой стрелке
+        this.rotateSide(this.kvadrArr[sideNumber], xy2xy); // Вращаем грань
+    };
+    // Вращем грань side копии кубика влево - против часовой
+    Rubik.prototype.rotateSideLeft = function (sideNumber) {
+        var _this = this;
+        this.side2CopySide(sideNumber); // привязываем квадратики грани к копии кубика (для вращения)
+        var xy2xy = function (x, y) { return [_this.length - y - 1, x]; }; // Формула вращения против часовой стрелки
+        this.rotateSide(this.kvadrArr[sideNumber], xy2xy); // Вращаем грань
     };
     /**
      * Записываем ходы вращений для дальнейшей автосборки
