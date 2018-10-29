@@ -40,7 +40,8 @@ export default {
   },
   methods: {
     onSelectPage: function (e) {
-      this.$store.dispatch('onSelectPage', e.target.dataset.page)
+      // this.$store.dispatch('onSelectPage', e.target.dataset.page)
+      this.$router.replace('/table/' + this.getCurrentTable.name + '/page/' + e.target.dataset.page)
     }
   }
 }

@@ -5,6 +5,10 @@
             <!--|-->
             <router-link to="/">Main</router-link>
             |
+            <router-link :to="'/table/' + this.$store.state.currentTable.name +'/page/' + this.$store.state.currentTable.curPage">
+                Tables
+            </router-link>
+            |
             <router-link to="/about">About</router-link>
             |
             <router-link to="/login">Login</router-link>

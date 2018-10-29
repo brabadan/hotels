@@ -4,10 +4,9 @@
                        class="app-main-header"
         >
         </AppMainHeader>
-        <AppMainSide :links="links"
-                     class="app-main-side"
-        >
-        </AppMainSide>
+        <ViewTableList class="app-main-view-table-list"
+        />
+        <ViewTable class="app-main-view-table"/>
     </div>
 </template>
 

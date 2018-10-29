@@ -87,6 +87,16 @@ export default new Vuex.Store({
       state.statusBar = { text, hidden: false }
     },
 
+    // Выбор таблицы по имени
+    selectTableName (state, tableName) {
+      for (let num in state.tableList) {
+        if (state.tableList[num].name === tableName) {
+          return this.commit('selectTable', num)
+        }
+      }
+      this.commit('showStatusBar', `Не найдена таблица ${tableName}`)
+    },
+
     // Выбор таблицы для просмотра и редактирования
     selectTable (state, tableNum) {
       const num = +tableNum
@@ -214,10 +224,15 @@ export default new Vuex.Store({
       commit('delNewRowImage', { imageId, columnName })
     },
     // Выбор таблицы для просмотра/редактирования
+    // todo filter for ViewTable
     selectTable ({ commit }, tableNum) {
       commit('selectTable', tableNum)
     },
+    selectTableName ({ commit }, tableName) {
+      commit('selectTableName', tableName)
+    },
     // Выбор страницы таблицы для просмотра/редактирования
+    // todo routing for paginator
     selectPage ({ commit }, page) {
       commit('selectPage', page)
     },

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 // import Home from './views/Home.vue'
 import HotelsMain from './views/HotelsMain'
 import Login from './views/Login'
+import TablesView from './views/TablesView'
 
 Vue.use(Router)
 
@@ -17,6 +18,11 @@ export default new Router({
       path: '/',
       name: 'main',
       component: HotelsMain
+    },
+    {
+      path: '/table/:tableName/page/:page',
+      name: 'table',
+      component: TablesView
     },
     {
       path: '/about',
