@@ -2,7 +2,7 @@
 /*
  * Copyright (c) 2017. Rabadan Bakhmudov
  */
-// exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Created by Рабадан on 03.05.2017.
  */
@@ -270,7 +270,7 @@ var Rubik = /** @class */ (function () {
         this.sides = []; // Грани Кубика
         this.copySides = []; // Копии граней Кубика
         this.kvadrArr = [];
-        this.colors = ['red', 'green', 'blue', 'yellow', 'white', 'cyan'];
+        this.colors = ['green', 'red', 'blue', 'darkorange', 'white', 'yellow'];
         this.degX = 0;
         this.degY = 0;
         this.degZ = 0;
@@ -1305,4 +1305,5 @@ var Rubik = /** @class */ (function () {
     };
     return Rubik;
 }());
-// exports.Rubik = Rubik;
+exports.Rubik = Rubik;
+//# sourceMappingURL=rubik.js.map

@@ -270,7 +270,7 @@ export class Rubik {
     public kvadrArr: KvadrArr2D[] = [];
     public kvadrSize: number; // Размер Квадратика
     public sideSize: number; // Размер Грани
-    public colors = ['red', 'green', 'blue', 'yellow', 'white', 'cyan'];
+    public colors = ['green', 'red', 'blue', 'darkorange', 'white', 'yellow'];
     public degX: number = 0;
     public degY: number = 0;
     public degZ: number = 0;

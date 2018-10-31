@@ -22,28 +22,15 @@ import { mapGetters } from 'vuex'
 
 export default {
   name: 'ViewTableList',
-  watch: {
-    '$route' (to, from) {
-      if (this.getCurrentTable.name !== to.params.tableName) {
-        this.selectTableName(to.params.tableName)
-      } else if (this.getCurrentTable.curPage !== to.params.page) {
-        this.$store.dispatch('onSelectPage', to.params.page)
-      }
-    }
-  },
   computed: {
     ...mapGetters([
       'getTableList',
-      'getCurrentTable',
       'getCurrentTableNum'
     ])
   },
   methods: {
     onSelectTable: function (tableName) {
       this.$router.replace('/table/' + tableName + '/page/1')
-    },
-    selectTableName: function (tableName) {
-      this.$store.dispatch('selectTableName', tableName)
     }
   }
 }

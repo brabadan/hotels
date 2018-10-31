@@ -25,12 +25,21 @@ export default {
       message: 'Это супер-пупер прога про отели'
     }
   },
+  watch: {
+    '$route' (to, from) {
+      if (this.getCurrentTable.name !== to.params.tableName) {
+        this.$store.dispatch('selectTableName', to.params.tableName)
+      } else if (this.getCurrentTable.curPage !== to.params.page) {
+        this.$store.dispatch('onSelectPage', to.params.page)
+      }
+    }
+  },
   computed: {
     ...mapState([
       'links'
     ]),
     ...mapGetters([
-      'tableList'
+      'getCurrentTable'
     ])
   },
   components: {

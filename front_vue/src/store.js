@@ -232,7 +232,6 @@ export default new Vuex.Store({
       commit('selectTableName', tableName)
     },
     // Выбор страницы таблицы для просмотра/редактирования
-    // todo routing for paginator
     selectPage ({ commit }, page) {
       commit('selectPage', page)
     },
