@@ -5,7 +5,7 @@
             <!--|-->
             <router-link to="/">Main</router-link>
             |
-            <router-link :to="'/table/' + this.$store.state.currentTable.name +'/page/' + this.$store.state.currentTable.curPage">
+            <router-link :to="tableLink()">
                 Tables
             </router-link>
             |
@@ -30,6 +30,12 @@ export default {
   methods: {
     logout: function () {
       this.$store.dispatch('logout')
+    },
+    tableLink: function () {
+      const tableName = this.$store.state.currentTable.name || this.$store.state.tableList[0].name
+      const page = this.$store.state.currentTable.curPage || 1
+      const link = `/table/${tableName}/page/${page}`
+      return link
     }
   },
   components: {

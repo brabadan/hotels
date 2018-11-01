@@ -35,10 +35,13 @@ export default {
         background-color black
         opacity 0.5
     img
-        position absolute
-        top 30%
-        left 35%
-        width 30%
+        position relative
+        margin-left auto
+        margin-right auto
+        top 25%
+        min-width 30%
+        max-width 70%
+        min-height 30%
         max-height 70%
         z-index 201
 </style>

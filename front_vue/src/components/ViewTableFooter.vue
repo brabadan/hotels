@@ -159,7 +159,11 @@ export default {
         if (el.files[i].type.includes('image') && el.files[i].size < 1050000) {
           this.imagesFiles[columnName].push(el.files[i])
         } else {
-          warning += el.files[i].name + ', '
+          if (!el.files[i].type.includes('image')) {
+            warning += el.files[i].name + ' - не картинка, '
+          } else {
+            warning += el.files[i].name + ' - слишком большой, '
+          }
         }
       }
       if (warning) {

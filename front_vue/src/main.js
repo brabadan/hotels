@@ -9,7 +9,7 @@ const tables = require('../../tables.json')
 store.state.tableList = tables
 store.state.tableList.forEach(table => { Vue.set(store.state.newRow, table.name, {}) })
 store.dispatch('checkLogin')
-  .then(() => store.dispatch('selectTable', 0))
+  // .then(() => store.dispatch('selectTable', 0))
   .then(
     new Vue({
       router,

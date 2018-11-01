@@ -30,10 +30,12 @@ export default {
   },
   beforeRouteEnter (to, from, next) {
     // this.fetchData(to, from, next)
-    var fetchPromise = store.dispatch('selectTableName', to.params.tableName)
-    fetchPromise
-      .then(() => next())
-      .catch(e => this.$store.dispatch('showStatusText', e))
+    const tableName = to.params.tableName
+    const page = to.params.page
+    store.dispatch('selectTableName', tableName)
+      .then(store.dispatch('onSelectPage', page))
+      .then(next)
+      .catch(e => store.dispatch('showStatusText', e))
   },
   beforeRouteUpdate (to, from, next) {
     this.fetchData(to, from, next)

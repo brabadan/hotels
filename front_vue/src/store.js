@@ -164,7 +164,6 @@ export default new Vuex.Store({
         .then(res => {
           state.currentTable.length = res.result
           state.currentTable.maxPage = Math.ceil(res.result / state.currentTable.perPage)
-          state.statusBar.text = res
         })
     },
 

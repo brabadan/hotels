@@ -22,15 +22,15 @@
             <!-- Поле-ссылка  = link -->
             <div v-else-if="column.link">
                 <!-- Если массив картинок -->
-                <!--<div v-if="column.link.imageField && (getLinkImage(column, row) instanceof Array)"-->
-                <!--class="link-image-array"-->
-                <!--&gt;-->
-                <img v-for="(src, index) of getLinkImage(column, row[column.name])"
-                     v-bind:key="index"
-                     v-bind:src="'images/' + src"
-                     v-on:click="onClickImage"
+                <div v-if="column.link.imageField"
+                     class="link-image-array"
                 >
-                <!--</div>-->
+                    <img v-for="(src, index) of getLinkImage(column, row[column.name])"
+                         v-bind:key="index"
+                         v-bind:src="'images/' + src"
+                         v-on:click="onClickImage"
+                    >
+                </div>
                 <!--<img v-else-if="column.link.imageField"-->
                 <!--v-bind:src="'images/' + getLinkImage(column, row)"-->
                 <!--&gt;-->
@@ -135,6 +135,7 @@ export default {
     img
         width 5em
         height: 5em
+        margin: 2px
 
     img:hover
         cursor move
