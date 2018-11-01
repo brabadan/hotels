@@ -25,7 +25,8 @@ export default new Vuex.Store({
       hidden: false // Невидимость/видимость
     },
     currentUser: 0, // Номер пользователя - устарел
-    newRow: {} // Здесь хранятся строки ввода данных для таблиц
+    newRow: {}, // Здесь хранятся строки ввода данных для таблиц
+    imageSrc: '' // Путь для просмотра картинки в полный размер
   },
   getters: {
     getTableList: (state) => {
@@ -205,6 +206,11 @@ export default new Vuex.Store({
         images = null
       }
       Object.assign(state.newRow[tableName][columnName], images)
+    },
+
+    // Показать картинку в полный размер
+    viewImage (state, imageSrc) {
+      state.imageSrc = imageSrc
     }
   },
   actions: {
@@ -272,6 +278,11 @@ export default new Vuex.Store({
     // Показать текст в Статусной строки
     showStatusText ({ commit }, text) {
       commit('showStatusBar', text)
+    },
+    // Показать картинку в полный размер
+    viewImage ({ commit }, imageSrc) {
+      commit('viewImage', imageSrc)
+      console.log('viewImage with:', imageSrc)
     }
   }
 })

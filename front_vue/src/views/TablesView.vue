@@ -7,6 +7,7 @@
         <ViewTableList class="app-main-view-table-list"
         />
         <ViewTable class="app-main-view-table"/>
+        <ViewImage v-bind:image-src="this.$store.state.imageSrc"></ViewImage>
     </div>
 </template>
 
@@ -17,6 +18,7 @@ import AppMainSide from '@/components/AppMainSide.vue'
 import ViewTableList from '@/components/ViewTableList'
 import ViewTable from '@/components/ViewTable'
 import StatusBar from '@/components/StatusBar'
+import ViewImage from '../components/ViewImage'
 
 export default {
   name: 'HotelsMain',
@@ -47,7 +49,8 @@ export default {
     ViewTable,
     AppMainHeader,
     AppMainSide,
-    StatusBar
+    StatusBar,
+    ViewImage
   }
 }
 

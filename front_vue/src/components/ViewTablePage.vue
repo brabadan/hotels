@@ -12,30 +12,28 @@
             v-bind:key="row._id + '.' + column.name"
         >
             <!-- Массив картинок -->
-            <div v-if="column.type === 'image' && column.array">
-                <img v-for="(src, index) of row[column.name]"
+            <div v-if="column.type === 'image'">
+                <img v-for="(src, index) of getImageArr(row, column)"
                      v-bind:key="index"
                      v-bind:src="'images/' + src"
-                >
-            </div>
-            <!-- Одна картинка -->
-            <div v-else-if="column.type === 'image' && row[column.name]">
-                <img v-bind:src="'images/' + row[column.name]"
+                     v-on:click="onClickImage"
                 >
             </div>
             <!-- Поле-ссылка  = link -->
             <div v-else-if="column.link">
                 <!-- Если массив картинок -->
-                <div v-if="column.link.imageField && (getLinkImage(column, row) instanceof Array)"
-                     class="link-image-array"
+                <!--<div v-if="column.link.imageField && (getLinkImage(column, row) instanceof Array)"-->
+                <!--class="link-image-array"-->
+                <!--&gt;-->
+                <img v-for="(src, index) of getLinkImage(column, row[column.name])"
+                     v-bind:key="index"
+                     v-bind:src="'images/' + src"
+                     v-on:click="onClickImage"
                 >
-                    <img v-for="(src, index) of getLinkImage(column, row)"
-                         v-bind:key="index"
-                         v-bind:src="'images/' + src"
-                    >
-                </div>
-                <img v-else-if="column.link.imageField"
-                     v-bind:src="'images/' + getLinkImage(column, row)">
+                <!--</div>-->
+                <!--<img v-else-if="column.link.imageField"-->
+                <!--v-bind:src="'images/' + getLinkImage(column, row)"-->
+                <!--&gt;-->
                 <span>{{ getLinkValue(column, row) }}</span>
             </div>
             <!-- Обычное поле -->
@@ -69,23 +67,31 @@ export default {
   },
   methods: {
     // Ввозвращаем массив Id картинок
-    getImageArr (column, row) {
+    getImageArr (row, column) {
       let images = row[column.name]
       if (images instanceof Array) return images
       if (images) return [images]
       return []
+    },
+    // Клик на картинке показывает её в полный размер
+    onClickImage (el) {
+      console.dir(el)
+      this.$store.dispatch('viewImage', el.srcElement.src)
     },
     // Нажали кнопку Редактировать
     onEditRow: function (row) {
       this.$store.commit('onEditRow', row)
     },
     // Значение link-image
-    getLinkImage: function (column, row) {
+    getLinkImage: function (column, id) {
       // Если поле-указатель, то возвращаем соответствующее значение
-      if (column.link && column.linkList && column.linkList[row[column.name]]) {
-        return column.linkList[row[column.name]].image || 'not found :('
-      }
-      return 'not found :('
+      // if (column.link && column.linkList && column.linkList[id]) {
+      let images = column.linkList[id].image
+      if (images instanceof Array) return images
+      if (images) return [images]
+      return []
+      // }
+      // return 'not found :('
     },
     // Значение link-таблицы
     getLinkValue: function (column, row) {
@@ -126,6 +132,7 @@ export default {
     img
         width 5em
         height: 5em
+
     span
         display block
 
