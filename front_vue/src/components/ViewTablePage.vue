@@ -75,7 +75,6 @@ export default {
     },
     // Клик на картинке показывает её в полный размер
     onClickImage (el) {
-      console.dir(el)
       this.$store.dispatch('viewImage', el.srcElement.src)
     },
     // Нажали кнопку Редактировать
@@ -86,10 +85,14 @@ export default {
     getLinkImage: function (column, id) {
       // Если поле-указатель, то возвращаем соответствующее значение
       // if (column.link && column.linkList && column.linkList[id]) {
-      let images = column.linkList[id].image
-      if (images instanceof Array) return images
-      if (images) return [images]
-      return []
+      try {
+        let images = column.linkList[id].image
+        if (images instanceof Array) return images
+        if (images) return [images]
+        return []
+      } catch (e) {
+        this.$store.dispatch('showStatusText', e)
+      }
       // }
       // return 'not found :('
     },
@@ -132,6 +135,9 @@ export default {
     img
         width 5em
         height: 5em
+
+    img:hover
+        cursor move
 
     span
         display block

@@ -282,7 +282,6 @@ export default new Vuex.Store({
     // Показать картинку в полный размер
     viewImage ({ commit }, imageSrc) {
       commit('viewImage', imageSrc)
-      console.log('viewImage with:', imageSrc)
     }
   }
 })

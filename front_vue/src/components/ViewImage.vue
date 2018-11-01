@@ -3,10 +3,10 @@
          v-if="imageSrc"
     >
         <div class="image-black-screen"
-             v-on:click="$store.dispatch('viewImage', '')"
+             v-on:click="closeImage"
         ></div>
         <img v-bind:src="imageSrc"
-             v-on:click="$store.dispatch('viewImage', '')"
+             v-on:click="closeImage"
         >
     </div>
 </template>
@@ -14,7 +14,12 @@
 <script>
 export default {
   name: 'ViewImage',
-  props: ['imageSrc']
+  props: ['imageSrc'],
+  methods: {
+    closeImage () {
+      this.$store.dispatch('viewImage', '')
+    }
+  }
 }
 </script>
 

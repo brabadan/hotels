@@ -19,6 +19,7 @@ import ViewTableList from '@/components/ViewTableList'
 import ViewTable from '@/components/ViewTable'
 import StatusBar from '@/components/StatusBar'
 import ViewImage from '../components/ViewImage'
+import store from '@/store'
 
 export default {
   name: 'HotelsMain',
@@ -27,15 +28,25 @@ export default {
       message: 'Это супер-пупер прога про отели'
     }
   },
-  watch: {
-    '$route' (to, from) {
-      if (this.getCurrentTable.name !== to.params.tableName) {
-        this.$store.dispatch('selectTableName', to.params.tableName)
-      } else if (this.getCurrentTable.curPage !== to.params.page) {
-        this.$store.dispatch('onSelectPage', to.params.page)
-      }
-    }
+  beforeRouteEnter (to, from, next) {
+    // this.fetchData(to, from, next)
+    var fetchPromise = store.dispatch('selectTableName', to.params.tableName)
+    fetchPromise
+      .then(() => next())
+      .catch(e => this.$store.dispatch('showStatusText', e))
   },
+  beforeRouteUpdate (to, from, next) {
+    this.fetchData(to, from, next)
+  },
+  // watch: {
+  //   '$route' (to, from) {
+  //     if (this.getCurrentTable.name !== to.params.tableName) {
+  //       this.$store.dispatch('selectTableName', to.params.tableName)
+  //     } else if (this.getCurrentTable.curPage !== to.params.page) {
+  //       this.$store.dispatch('onSelectPage', to.params.page)
+  //     }
+  //   }
+  // },
   computed: {
     ...mapState([
       'links'
@@ -44,13 +55,30 @@ export default {
       'getCurrentTable'
     ])
   },
+  methods: {
+    fetchData (to, from, next) {
+      if (this.getCurrentTable.name !== to.params.tableName) {
+        var fetchPromise = this.$store.dispatch('selectTableName', to.params.tableName)
+      } else if (this.getCurrentTable.curPage !== to.params.page) {
+        fetchPromise = this.$store.dispatch('onSelectPage', to.params.page)
+      } else {
+        this.$store.dispatch('showStatusText', 'cant fetch data')
+          .then(() => next(false))
+          .catch(e => this.$store.dispatch('showStatusText', e))
+      }
+      fetchPromise
+        .then(() => next())
+        .catch(e => this.$store.dispatch('showStatusText', e))
+    }
+  },
   components: {
     ViewTableList,
     ViewTable,
     AppMainHeader,
     AppMainSide,
     StatusBar,
-    ViewImage
+    ViewImage,
+    store
   }
 }
 
