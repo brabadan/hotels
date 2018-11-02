@@ -278,6 +278,7 @@ var Rubik = /** @class */ (function () {
         this.rotateTimeIntervalID = 0; // для setTimer при повороте
         this.rotRecords = [];
         var parentEl = document.getElementById(elId);
+        parentEl.innerHTML = '';
         this.parentEl = parentEl;
         this.parentEl.onmousedown = this.parentEl.onselectstart = function (ev) {
             // выделять можно только элемент input

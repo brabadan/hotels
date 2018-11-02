@@ -291,6 +291,7 @@ export class Rubik {
      */
     constructor(elId: string, public length = 3) {
         let parentEl = document.getElementById(elId);
+        parentEl.innerHTML = '';
         this.parentEl = parentEl;
         this.parentEl.onmousedown = this.parentEl.onselectstart = function (ev) {
             // выделять можно только элемент input
