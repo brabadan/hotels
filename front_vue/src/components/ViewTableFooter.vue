@@ -12,16 +12,26 @@
                     </span>
 
             <!-- Поле-ссылка на ключ другой таблицы - делаем выбор по значеням соответств. таблицы-->
-            <select v-else-if="column.link"
-                    v-model="$store.state.newRow[getCurrentTable.name][column.name]"
-            >
-                <option v-for="(value, key) of column.linkList"
-                        v-bind:key="key"
-                        v-bind:value="key"
+            <div v-else-if="column.link">
+                <!-- Если массив картинок -->
+                <div v-if="column.link.imageField"
+                     class="link-image-array"
                 >
-                    {{ value.value }}
-                </option>
-            </select>
+                    <img v-for="(src, index) of getLinkImage(column, $store.state.newRow[getCurrentTable.name][column.name])"
+                         v-bind:key="index"
+                         v-bind:src="'images/' + src"
+                         v-on:click="$store.dispatch('viewImage', 'images/' + src)"
+                    >
+                </div>
+                <select v-model="$store.state.newRow[getCurrentTable.name][column.name]">
+                    <option v-for="(value, key) of column.linkList"
+                            v-bind:key="key"
+                            v-bind:value="key"
+                    >
+                        {{ value.value }}
+                    </option>
+                </select>
+            </div>
 
             <!-- Поле Image -->
             <div v-else-if="column.type === 'image'"
@@ -63,6 +73,7 @@
                     <!-- Очистить выбор -->
                     <button v-on:click="clearInputFiles(column.name)"
                             v-if="imagesFiles[column.name] && imagesFiles[column.name].length > 0"
+                            title="Очистить выбор"
                     >X
                     </button>
                 </div>
@@ -70,6 +81,7 @@
                 <img v-for="(file, index) of imagesFiles[column.name]"
                      v-bind:key="index"
                      v-bind:src="file2Src(file)"
+                     v-on:click="$store.dispatch('viewImage', file2Src(file))"
                 />
             </div>
 
@@ -91,7 +103,9 @@
                 {{ buttonName() }}
             </button>
             <!-- Кнопка Очистить -->
-            <button v-on:click="clearNewRow">
+            <button v-on:click="clearNewRow"
+                    title="Очистить строку ввода"
+            >
                 Очист.
             </button>
         </td>
@@ -123,6 +137,21 @@ export default {
     ])
   },
   methods: {
+    // Значение link-image
+    getLinkImage: function (column, id) {
+      // Если поле-указатель, то возвращаем соответствующее значение
+      // if (column.link && column.linkList && column.linkList[id]) {
+      try {
+        let images = column.linkList[id].image
+        if (images instanceof Array) return images
+        if (images) return [images]
+        return []
+      } catch (e) {
+        this.$store.dispatch('showStatusText', e)
+      }
+      // }
+      // return 'not found :('
+    },
     // Возвращаем список полей текущей таблицы + готовим объект images
     getCurrentColumns () {
       for (let column of this.getCurrentTable.columns) {
@@ -298,6 +327,10 @@ export default {
     img
         width: 5em
         height: 5em
+        margin: 2px
+
+    img:hover
+        cursor move
 
     div.image
         display inline-block;
