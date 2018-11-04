@@ -6,9 +6,17 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    hotelList: [],
+    currentHotel: {
+      num: 0,
+      name: ''
+    },
     serverURL: '', // Путь для работы с другим сервером API
     username: '', // Аутентифицированный Пользователь
-    links: [{ name: 'Конфигурация' }, { name: 'Работаем с отелем' }], // массив для sideMenu - устарел
+    links: [ // массив для sideMenu
+      { name: 'Конфигурация', link: 'config' },
+      { name: 'Работаем с отелем', link: 'work' }
+    ],
     tableList: [], // Массив таблиц для просмотра и редактирования
     currentTable: { // Текущая таблица при просмотре и редактировании
       num: null, // Номер текущей таблицы
@@ -210,6 +218,11 @@ export default new Vuex.Store({
     // Показать картинку в полный размер
     viewImage (state, imageSrc) {
       state.imageSrc = imageSrc
+    },
+
+    // Сохранить список Отелей
+    saveHotelList (state, hotelList) {
+      state.hotelList = hotelList
     }
   },
   actions: {
@@ -281,6 +294,16 @@ export default new Vuex.Store({
     // Показать картинку в полный размер
     viewImage ({ commit }, imageSrc) {
       commit('viewImage', imageSrc)
+    },
+    // Скачать список Отелей
+    getHotelList ({ commit, state }) {
+      request('GET', state.serverURL + 'hotels/toarray')
+        .then(res => {
+          if (res.result && res.result instanceof Array) {
+            commit('saveHotelList', res.result)
+          }
+        })
+        .catch(error => commit('showStatusBar', 'error: ' + error))
     }
   }
 })

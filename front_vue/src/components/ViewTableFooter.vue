@@ -14,15 +14,10 @@
             <!-- Поле-ссылка на ключ другой таблицы - делаем выбор по значеням соответств. таблицы-->
             <div v-else-if="column.link">
                 <!-- Если массив картинок -->
-                <div v-if="column.link.imageField"
-                     class="link-image-array"
+                <ViewLinkImages v-if="column.link.imageField && $store.state.newRow[getCurrentTable.name][column.name]"
+                                v-bind:images="column.linkList[$store.state.newRow[getCurrentTable.name][column.name]].image"
                 >
-                    <img v-for="(src, index) of getLinkImage(column, $store.state.newRow[getCurrentTable.name][column.name])"
-                         v-bind:key="index"
-                         v-bind:src="'images/' + src"
-                         v-on:click="$store.dispatch('viewImage', 'images/' + src)"
-                    >
-                </div>
+                </ViewLinkImages>
                 <select v-model="$store.state.newRow[getCurrentTable.name][column.name]">
                     <option v-for="(value, key) of column.linkList"
                             v-bind:key="key"
@@ -39,29 +34,8 @@
             >
                 <!-- При редактировании, показываем фотки только если не выбраны новые getFooterImageArr(column)-->
                 <div v-if="!imagesFiles[column.name] || imagesFiles[column.name].length === 0">
-                    <!-- Если массив фото -->
-                    <div v-if="column.array">
-                        <div v-for="(src, index) of getNewRow[column.name]"
-                             v-bind:key="index"
-                             class="image"
-                        >
-                            <img v-bind:src="'images/' + src"/>
-                            <div v-on:click="$store.state.newRow[getCurrentTable.name][column.name].splice(index, 1)"
-                                 class="image-close"
-                            >X
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Если одиночное(не массив) фото-->
-                    <div v-else-if="getNewRow[column.name]">
-                        <div class="image">
-                            <img v-bind:src="'images/' + $store.state.newRow[getCurrentTable.name][column.name]"/>
-                            <div v-on:click="$store.state.newRow[getCurrentTable.name][column.name] = null"
-                                 class="image-close"
-                            >X
-                            </div>
-                        </div>
-                    </div>
+                    <ViewLinkImages v-bind:images="$store.state.newRow[getCurrentTable.name][column.name]">
+                    </ViewLinkImages>
                 </div>
                 <!-- Выбираем новые фотки -->
                 <div class="input-files">
@@ -77,7 +51,7 @@
                     >X
                     </button>
                 </div>
-                <!-- Показываем выбранные фотки -->
+                <!-- Показываем выбранные файлы-фотки -->
                 <img v-for="(file, index) of imagesFiles[column.name]"
                      v-bind:key="index"
                      v-bind:src="file2Src(file)"
@@ -117,10 +91,12 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import request from '../request'
+import ViewLinkImages from './VueLinkImages'
 
 export default {
   components: {
-    Vue
+    Vue,
+    ViewLinkImages
   },
   name: 'ViewTableFooter',
   data () {
@@ -137,21 +113,6 @@ export default {
     ])
   },
   methods: {
-    // Значение link-image
-    getLinkImage: function (column, id) {
-      // Если поле-указатель, то возвращаем соответствующее значение
-      // if (column.link && column.linkList && column.linkList[id]) {
-      try {
-        let images = column.linkList[id].image
-        if (images instanceof Array) return images
-        if (images) return [images]
-        return []
-      } catch (e) {
-        this.$store.dispatch('showStatusText', e)
-      }
-      // }
-      // return 'not found :('
-    },
     // Возвращаем список полей текущей таблицы + готовим объект images
     getCurrentColumns () {
       for (let column of this.getCurrentTable.columns) {

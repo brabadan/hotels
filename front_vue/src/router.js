@@ -4,6 +4,8 @@ import Router from 'vue-router'
 import HotelsMain from './views/HotelsMain'
 import Login from './views/Login'
 import TablesView from './views/TablesView'
+import Config from './components/Config'
+import Work from './components/Work'
 
 Vue.use(Router)
 
@@ -17,7 +19,17 @@ export default new Router({
     {
       path: '/',
       name: 'main',
-      component: HotelsMain
+      component: HotelsMain,
+      children: [
+        {
+          path: 'config',
+          component: Config
+        },
+        {
+          path: 'work',
+          component: Work
+        }
+      ]
     },
     {
       path: '/table/:tableName/page/:page',

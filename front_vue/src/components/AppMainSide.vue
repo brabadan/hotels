@@ -3,7 +3,8 @@
         <strong>Режим работы:</strong>
         <ul>
             <li v-for="(link, index) in links"
-                v-bind:key="index">{{ link.name }}
+                v-bind:key="index">
+                <router-link :to="link.link">{{ link.name }}</router-link>
             </li>
         </ul>
     </div>

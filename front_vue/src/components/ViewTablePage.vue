@@ -11,29 +11,18 @@
         <td v-for="column in getCurrentTable.columns"
             v-bind:key="row._id + '.' + column.name"
         >
-            <!-- Массив картинок -->
+            <!-- Если тип = картинка -->
             <div v-if="column.type === 'image'">
-                <img v-for="(src, index) of getImageArr(row, column)"
-                     v-bind:key="index"
-                     v-bind:src="'images/' + src"
-                     v-on:click="onClickImage"
-                >
+                <ViewLinkImages v-bind:images="row[column.name]">
+                </ViewLinkImages>
             </div>
-            <!-- Поле-ссылка  = link -->
+            <!-- Иначе если поле-ссылка  = link -->
             <div v-else-if="column.link">
                 <!-- Если массив картинок -->
-                <div v-if="column.link.imageField"
-                     class="link-image-array"
-                >
-                    <img v-for="(src, index) of getLinkImage(column, row[column.name])"
-                         v-bind:key="index"
-                         v-bind:src="'images/' + src"
-                         v-on:click="onClickImage"
-                    >
+                <div v-if="column.link.imageField && column.linkList[row[column.name]]">
+                    <ViewLinkImages v-bind:images="column.linkList[row[column.name]].image">
+                    </ViewLinkImages>
                 </div>
-                <!--<img v-else-if="column.link.imageField"-->
-                <!--v-bind:src="'images/' + getLinkImage(column, row)"-->
-                <!--&gt;-->
                 <span>{{ getLinkValue(column, row) }}</span>
             </div>
             <!-- Обычное поле -->
@@ -56,6 +45,7 @@
 <script>
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
+import ViewLinkImages from './VueLinkImages'
 
 export default {
   name: 'ViewTablePage',
@@ -66,13 +56,6 @@ export default {
     ])
   },
   methods: {
-    // Ввозвращаем массив Id картинок
-    getImageArr (row, column) {
-      let images = row[column.name]
-      if (images instanceof Array) return images
-      if (images) return [images]
-      return []
-    },
     // Клик на картинке показывает её в полный размер
     onClickImage (el) {
       this.$store.dispatch('viewImage', el.srcElement.src)
@@ -80,21 +63,6 @@ export default {
     // Нажали кнопку Редактировать
     onEditRow: function (row) {
       this.$store.commit('onEditRow', row)
-    },
-    // Значение link-image
-    getLinkImage: function (column, id) {
-      // Если поле-указатель, то возвращаем соответствующее значение
-      // if (column.link && column.linkList && column.linkList[id]) {
-      try {
-        let images = column.linkList[id].image
-        if (images instanceof Array) return images
-        if (images) return [images]
-        return []
-      } catch (e) {
-        this.$store.dispatch('showStatusText', e)
-      }
-      // }
-      // return 'not found :('
     },
     // Значение link-таблицы
     getLinkValue: function (column, row) {
@@ -109,7 +77,8 @@ export default {
     }
   },
   components: {
-    Vue
+    Vue,
+    ViewLinkImages
   }
 }
 </script>
