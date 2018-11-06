@@ -3,8 +3,11 @@
         <strong>Режим работы:</strong>
         <ul>
             <li v-for="(link, index) in links"
-                v-bind:key="index">
-                <router-link :to="link.link">{{ link.name }}</router-link>
+                v-bind:key="index"
+                v-on:click="onClick(link.link)"
+                v-bind:class="$route.path.endsWith(link.link) ? 'current-li' : ''"
+            >
+                {{ link.name }}
             </li>
         </ul>
     </div>
@@ -15,6 +18,12 @@ export default {
   name: 'AppMainSide',
   props: {
     links: Array
+  },
+  methods: {
+    onClick (link) {
+      console.dir(this.$router)
+      this.$router.replace(link)
+    }
   }
 }
 </script>
@@ -28,5 +37,7 @@ ul
     li:hover
         cursor pointer
         background-color aqua
-
+    li.current-li
+        font-size larger
+        color brown
 </style>

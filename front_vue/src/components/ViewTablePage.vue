@@ -19,7 +19,7 @@
             <!-- Иначе если поле-ссылка  = link -->
             <div v-else-if="column.link">
                 <!-- Если массив картинок -->
-                <div v-if="column.link.imageField && column.linkList[row[column.name]]">
+                <div v-if="column.link.imageField && column.linkList && column.linkList[row[column.name]]">
                     <ViewLinkImages v-bind:images="column.linkList[row[column.name]].image">
                     </ViewLinkImages>
                 </div>

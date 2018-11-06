@@ -3,7 +3,7 @@
         <div id="nav">
             <!--<router-link to="/">Home</router-link>-->
             <!--|-->
-            <router-link to="/">Main</router-link>
+            <router-link to="/work">Main</router-link>
             |
             <router-link :to="tableLink()">
                 Tables

@@ -1,41 +1,5 @@
 [
   {
-    "aboutTable": "Пользователи системы",
-    "name": "users",
-    "rightsRequired": "A",
-    "columns": [
-      {
-        "name": "createdAt",
-        "type": "date",
-        "readonly": true
-      },
-      {
-        "name": "createdBy",
-        "type": "number",
-        "readonly": true,
-        "link": {
-          "table": "users",
-          "keyField": "_id",
-          "valueField": "name"
-        }
-      },
-      {
-        "name": "name",
-        "type": "text",
-        "required": true
-      },
-      {
-        "name": "rights",
-        "type": "text"
-      },
-      {
-        "name": "about_user",
-        "type": "textarea",
-        "about_column": "Уточняющая информация о пользователе"
-      }
-    ]
-  },
-  {
     "aboutTable": "Отели",
     "name": "hotels",
     "columns": [

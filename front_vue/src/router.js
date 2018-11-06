@@ -3,7 +3,7 @@ import Router from 'vue-router'
 // import Home from './views/Home.vue'
 import HotelsMain from './views/HotelsMain'
 import Login from './views/Login'
-import TablesView from './views/TablesView'
+import TablesView from './views/Tables'
 import Config from './components/Config'
 import Work from './components/Work'
 
