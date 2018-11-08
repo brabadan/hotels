@@ -2,15 +2,15 @@ const fileupload = require('express-fileupload');
 const config = require('../../config/index');
 
 // Переводим объект files, содержащий файлы и массивы файлов в rawArr
-function files2RawArr(files) {
-    let rawArr = [];
+function files2fileArr(files) {
+    let fileArr = [];
     // цикл проходит по ключам первичного files, а также по вложенному массиву
     for (let key in files) {
         const file = files[key];
         if (!file) continue;
         // Если под одним ключем несколько файлов - рекурсия
         if (file instanceof Array) {
-            rawArr = rawArr.concat(files2RawArr(file));
+            fileArr = fileArr.concat(files2fileArr(file));
             continue;
         }
         // Иначе если под этим ключем одиночный файл - продолжаем
@@ -23,34 +23,30 @@ function files2RawArr(files) {
             continue;
         }
 
-        let raw = {
-            name: file.name,
-            data: file.data,
-            mimeType: file.mimetype,
-            md5: file.md5()
-        };
-        rawArr.push(raw);
+        fileArr.push(file);
     }
-    return rawArr;
+    return fileArr;
 }
 
 // Проверяем загруженные файлы картинок и возвращаем массив
-function checkReqFiles(req) {
+function getReqFileArr(req) {
     const files = req.files;
     if (!files || Object.keys(files).length === 0) {
         throw ('нет файлов для загрузки');
     }
     // Создаем массив изобр. для записи в Коллекцию + createdBy
-    const rawArr = files2RawArr(files).map(raw => ({
+    // т.к. под одним ключём в files моет быть массив файлов
+    // переводим files в простой массив файлов
+    const fileArr = files2fileArr(files).map(raw => ({
         ...raw,
         createdBy: req.session.user._id
     }));
 
-    if (rawArr.length === 0) {
+    if (fileArr.length === 0) {
         throw('Файлы картинок не проходят проверку');
     }
 
-    return rawArr;
+    return fileArr;
 }
 
 module.exports = function (app, Model) {
@@ -63,7 +59,7 @@ module.exports = function (app, Model) {
     // По картинке возвращаем промис ее загрузки
     function image2Promise(image) {
         return new Promise((resolve, reject) => {
-            const where = {md5: image.md5};
+            const where = { md5: image.md5 };
             const options = { new: true, upsert: true };
                 Model.findOneAndUpdate(where, image, options, function (err, result) {
                     if (err) reject(err);
@@ -71,7 +67,6 @@ module.exports = function (app, Model) {
                 })
         })
     }
-//todo virtual
 
     // Загрузка картинок с проверкой MD5
     function uploadImages(images) {
@@ -98,7 +93,7 @@ module.exports = function (app, Model) {
     // Загружаем картинки в Коллекцию
     app.post(config.app_path + config.image_collection, (req, res) => {
         try {
-            const imageArr = checkReqFiles(req);
+            const imageArr = getReqFileArr(req);
 
             // Вставляем картинки и возвращаем массив их _id
             uploadImages(imageArr)
@@ -108,12 +103,6 @@ module.exports = function (app, Model) {
                 .catch(err => {
                     res.send({ err });
                 })
-            // Model.insertMany(imageArr, function (err, images) {
-            //     if (err) return res.send({ err });
-            //
-            //     const result = images.map(image => image._id);
-            //     res.send({ res: result });
-            // });
         } catch(err) {
             res.send( { err });
         }
@@ -125,15 +114,15 @@ module.exports = function (app, Model) {
         const id = req.params.id;
         const options = { upsert: true };
         try {
-            const imageArr = checkReqFiles(req);
+            const imageArr = getReqFileArr(req);
             // Заменяем картинку в Коллекции, возвращаем значение err
             uploadImages(imageArr)
                 .then(result => {
                     res.send({ res: result });
+                })
+                .catch(err => {
+                    res.send({ err });
                 });
-            // Model.findByIdAndUpdate(id, imageArr[0], options, (err) => {
-            //     res.send({ err });
-            // })
         } catch (err) {
             res.send({ err });
         }

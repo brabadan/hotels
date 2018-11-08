@@ -5,5 +5,4 @@ module.exports = function (app) {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
 
-    require('./static')(app);
 };

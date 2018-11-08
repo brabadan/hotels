@@ -2,6 +2,7 @@
     <div class="container-config">
         Выберете отель:
         <select v-model="$store.state.currentHotel"
+                v-on:change="$store.dispatch('onCurrentHotelChanged')"
         >
             <option v-for="hotel in $store.state.hotelList"
                     v-bind:value="hotel"

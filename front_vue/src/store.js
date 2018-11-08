@@ -9,7 +9,11 @@ export default new Vuex.Store({
     hotelList: [],
     currentHotel: {
       num: 0,
-      name: ''
+      name: '',
+      fullInfo: {
+        rooms: [],
+        items: []
+      }
     },
     serverURL: '', // Путь для работы с другим сервером API
     username: '', // Аутентифицированный Пользователь
@@ -223,6 +227,12 @@ export default new Vuex.Store({
     // Сохранить список Отелей
     saveHotelList (state, hotelList) {
       state.hotelList = hotelList
+    },
+
+    // Сохраняем FullInfo отеля
+    saveHotelFullInfo (state, fullInfo) {
+      state.currentHotel.fullInfo = fullInfo
+      console.dir(state.currentHotel)
     }
   },
   actions: {
@@ -301,6 +311,16 @@ export default new Vuex.Store({
         .then(res => {
           if (res.result && res.result instanceof Array) {
             commit('saveHotelList', res.result)
+          }
+        })
+        .catch(error => commit('showStatusBar', 'error: ' + error))
+    },
+    // При изменении текущего отеля, скачиваем всю ссответствующую инфу
+    onCurrentHotelChanged ({ commit, state }) {
+      request('GET', state.serverURL + 'hotel_full_info/' + state.currentHotel._id)
+        .then(res => {
+          if (res.result) {
+            commit('saveHotelFullInfo', res.result)
           }
         })
         .catch(error => commit('showStatusBar', 'error: ' + error))
