@@ -15,7 +15,6 @@
             <div v-if="column.type === 'image'">
                 <ViewLinkImages v-bind:images="row[column.name]">
                 </ViewLinkImages>
-                {{ row[column.name] }}
             </div>
 
             <!-- Иначе если поле-ссылка  = link -->

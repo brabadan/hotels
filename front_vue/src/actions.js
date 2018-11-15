@@ -110,29 +110,27 @@ export default {
   },
 
   // Выбор страницы таблицы для просмотра/редактирования
+  // Скачивать только нужные столбцы fields2Return
   selectPage ({ commit, state }, page) {
     commit('showStatusBar', `Loading page ${page} data...`)
     const { name, perPage } = state.currentTable
     const columnNameArr = state.currentTable.columns.map(column => column.name)
-    const fields2Return = columnNameArr.join(' ')
-    request('GET', state.serverURL + name + '/page/' + page + '/perpage/' + perPage, { fields2Return })
+    const fields2Return = '?fields=' + columnNameArr.join(' ') // Поля для возврата
+    // Получаем страницу таблицы с сервера
+    request('GET', state.serverURL + name + '/page/' + page + '/perpage/' + perPage + fields2Return)
       .then(res => {
         if (res.err) {
           commit('showStatusBar', res)
         } else {
-          const rows = res.result.map(row => {
-            const filteredRow = { _id: row._id }
-            columnNameArr.forEach(name => {
-              filteredRow[name] = row[name]
-            })
-            return filteredRow
-          })
+          const rows = res.result
           const currentTable = {
             rows,
             curPage: +page
           }
+          // Сохраняем её
           commit('setCurrentTable', currentTable)
           commit('showStatusBar', `page ${page} loaded successfull`)
+          // Узнаеём длину Коллекции(таблицы) для Пагинатора
           this.dispatch('countTableLength')
         }
       })
@@ -146,7 +144,7 @@ export default {
     // const newRow = row
     request('PUT', state.serverURL + state.currentTable.name + '/' + row._id, row)
       .then((result) => {
-        // commit('putRow', result)
+        // Перечитываем текущую страницу
         this.dispatch('selectPage', state.currentTable.curPage)
         commit('showStatusBar', 'result: ' + result)
       })
@@ -156,10 +154,11 @@ export default {
   // Вставляем строку в таблицу
   postRow ({ commit, state }, row) {
     const table = state.tableList[state.currentTable.num]
-    // const newRow = row // { ...row, created_date: (new Date()), created_user_id: state.currentUser }
+    // Отправляем её на сервер
     request('POST', state.serverURL + table.name, row)
       .then((result) => {
-        commit('selectPage', state.currentTable.curPage)
+        // Перечитываем текущую страницу
+        this.dispatch('selectPage', state.currentTable.curPage)
         commit('showStatusBar', 'result: ' + result.req)
       })
       .catch(error => commit('showStatusBar', 'error: ' + error))

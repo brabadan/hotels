@@ -75,7 +75,7 @@ module.exports = function (app, mongoose) {
         app.get(config.app_path + collection + '/page/:page/perpage/:perpage', (req, res) => {
             const limit = +req.params.perpage;
             const skip = (req.params.page - 1) * limit;
-            const fields2Return = req.body
+            const fields2Return = req.query.fields || '';
             // db.collection(collection)
             Model
                 .find({}, fields2Return)
