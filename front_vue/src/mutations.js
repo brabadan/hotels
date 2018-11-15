@@ -6,10 +6,9 @@ export default {
     state.userName = userName
   },
 
+  // Записываем в state.currentTable новые данные
   setCurrentTable (state, currentTable) {
-    for (let key in currentTable) {
-      Vue.set(state.currentTable, key, currentTable[key])
-    }
+    Object.assign(state.currentTable, currentTable)
   },
 
   showStatusBar (state, text) {

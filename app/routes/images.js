@@ -59,7 +59,8 @@ module.exports = function (app, Model) {
     // По картинке возвращаем промис ее загрузки
     function image2Promise(image) {
         return new Promise((resolve, reject) => {
-            const where = { md5: image.md5 };
+            const where = { md5: image.md5() };
+            image.md5 = where.md5;
             const options = { new: true, upsert: true };
                 Model.findOneAndUpdate(where, image, options, function (err, result) {
                     if (err) reject(err);

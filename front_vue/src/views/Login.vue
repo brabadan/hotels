@@ -19,13 +19,13 @@ export default {
   name: 'Login',
   data () {
     return {
-      userName: '',
+      username: '',
       password: ''
     }
   },
   methods: {
     login: function () {
-      const user = { userName: this.userName, password: this.password }
+      const user = { username: this.username, password: this.password }
       this.$store.dispatch('login', user)
     }
   }

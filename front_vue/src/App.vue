@@ -12,10 +12,10 @@
             <router-link to="/about">About</router-link>
             |
             <router-link to="/login">Login</router-link>
-            <label v-if="this.$store.state.userName"
+            <label v-if="this.$store.state.username"
                    id="user"
             >
-                User: {{ this.$store.state.userName }}
+                User: {{ this.$store.state.username }}
                 <button v-on:click="logout">logout</button>
             </label>
         </div>

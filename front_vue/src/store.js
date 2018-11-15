@@ -17,7 +17,7 @@ export default new Vuex.Store({
       }
     },
     serverURL: '', // Путь для работы с другим сервером API
-    userName: '', // Аутентифицированный Пользователь
+    username: '', // Аутентифицированный Пользователь
     links: [ // массив для sideMenu
       { name: 'Конфигурация', link: 'config' },
       { name: 'Работаем с отелем', link: 'work' }

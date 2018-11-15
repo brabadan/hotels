@@ -16,24 +16,24 @@ export default {
    * Authorization on Server
    * @param commit
    * @param state
-   * @param user - object of user { userName: string, password: string }
+   * @param user - object of user { username: string, password: string }
    */
   login ({ commit, state }, user) {
-    if (!user.userName || !user.password) {
+    if (!user.username || !user.password) {
       commit('showStatusBar', 'Имя пользователя и пароль должны быть заполнены!!!')
     } else {
       request('POST', state.serverURL + 'login', user)
         .then(result => {
-          if (result.res && result.res.userName) {
-            commit('showStatusBar', `Успешная авториация: ${result.res.userName}`)
-            commit('setUser', result.res.userName)
+          if (result.res && result.res.username) {
+            commit('showStatusBar', `Успешная авториация: ${result.res.username}`)
+            commit('setUser', result.res.username)
             this.dispatch('selectTable', state.currentTable.num)
           } else {
-            commit('showStatusBar.text', `Неизвестный ответ: ${result}`)
+            commit('showStatusBar', `Неизвестный ответ: ${result}`)
           }
         })
         .catch(e => {
-          commit('showStatusBar.text', `Ошибка аутентификации: ${e}`)
+          commit('showStatusBar', `Ошибка аутентификации: ${e}`)
         })
     }
   },
@@ -113,13 +113,22 @@ export default {
   selectPage ({ commit, state }, page) {
     commit('showStatusBar', `Loading page ${page} data...`)
     const { name, perPage } = state.currentTable
-    request('GET', state.serverURL + name + '/page/' + page + '/perpage/' + perPage)
+    const columnNameArr = state.currentTable.columns.map(column => column.name)
+    const fields2Return = columnNameArr.join(' ')
+    request('GET', state.serverURL + name + '/page/' + page + '/perpage/' + perPage, { fields2Return })
       .then(res => {
         if (res.err) {
           commit('showStatusBar', res)
         } else {
+          const rows = res.result.map(row => {
+            const filteredRow = { _id: row._id }
+            columnNameArr.forEach(name => {
+              filteredRow[name] = row[name]
+            })
+            return filteredRow
+          })
           const currentTable = {
-            rows: res.result,
+            rows,
             curPage: +page
           }
           commit('setCurrentTable', currentTable)
@@ -138,7 +147,7 @@ export default {
     request('PUT', state.serverURL + state.currentTable.name + '/' + row._id, row)
       .then((result) => {
         // commit('putRow', result)
-        commit('selectPage', state.currentTable.curPage)
+        this.dispatch('selectPage', state.currentTable.curPage)
         commit('showStatusBar', 'result: ' + result)
       })
       .catch(error => commit('showStatusBar', 'error: ' + error))

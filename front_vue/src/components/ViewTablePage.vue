@@ -15,7 +15,9 @@
             <div v-if="column.type === 'image'">
                 <ViewLinkImages v-bind:images="row[column.name]">
                 </ViewLinkImages>
+                {{ row[column.name] }}
             </div>
+
             <!-- Иначе если поле-ссылка  = link -->
             <div v-else-if="column.link">
                 <!-- Если массив картинок -->
@@ -25,6 +27,7 @@
                 </div>
                 <span>{{ getLinkValue(column, row) }}</span>
             </div>
+
             <!-- Обычное поле -->
             <span v-else>
             {{ getLinkValue(column, row) }}
