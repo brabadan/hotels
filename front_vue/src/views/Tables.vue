@@ -23,32 +23,29 @@ import store from '@/store'
 
 export default {
   name: 'HotelsMain',
+  props: ['tableName', 'page'],
   data () {
     return {
       message: 'Это супер-пупер прога про отели'
     }
   },
-  beforeRouteEnter (to, from, next) {
-    // this.fetchData(to, from, next)
-    const tableName = to.params.tableName
-    const page = to.params.page
-    store.dispatch('selectTableName', tableName)
-      .then(store.dispatch('onSelectPage', page))
-      .then(next)
-      .catch(e => store.dispatch('showStatusText', e))
+
+  mounted () {
+    this.fetchData({ tableName: this.tableName, page: this.page })
+      .catch(e => {
+        this.dispatch('showStatusText', e)
+      })
   },
+
   beforeRouteUpdate (to, from, next) {
-    this.fetchData(to, from, next)
+    this.fetchData(to.params)
+      .then(() => next())
+      .catch(e => {
+        this.dispatch('showStatusText', e)
+        next(false)
+      })
   },
-  // watch: {
-  //   '$route' (to, from) {
-  //     if (this.getCurrentTable.name !== to.params.tableName) {
-  //       this.$store.dispatch('selectTableName', to.params.tableName)
-  //     } else if (this.getCurrentTable.curPage !== to.params.page) {
-  //       this.$store.dispatch('onSelectPage', to.params.page)
-  //     }
-  //   }
-  // },
+
   computed: {
     ...mapState([
       'links'
@@ -57,22 +54,29 @@ export default {
       'getCurrentTable'
     ])
   },
+
   methods: {
-    fetchData (to, from, next) {
-      if (this.getCurrentTable.name !== to.params.tableName) {
-        var fetchPromise = this.$store.dispatch('selectTableName', to.params.tableName)
-      } else if (this.getCurrentTable.curPage !== to.params.page) {
-        fetchPromise = this.$store.dispatch('onSelectPage', to.params.page)
-      } else {
-        this.$store.dispatch('showStatusText', 'cant fetch data')
-          .then(() => next(false))
-          .catch(e => this.$store.dispatch('showStatusText', e))
-      }
-      fetchPromise
-        .then(() => next())
-        .catch(e => this.$store.dispatch('showStatusText', e))
+    fetchData ({ tableName, page }) {
+      return new Promise((resolve) => {
+        if (this.getCurrentTable.name !== tableName) {
+          var fetchPromise = this.$store.dispatch('selectTableName', tableName)
+        } else if (this.getCurrentTable.curPage !== page) {
+          fetchPromise = this.$store.dispatch('selectPage', page)
+        } else {
+          this.$store.dispatch('showStatusText', 'cant fetch data')
+            .catch(e => {
+              this.$store.dispatch('showStatusText', e)
+            })
+        }
+        fetchPromise
+          .then(() => resolve())
+          .catch(e => {
+            this.$store.dispatch('showStatusText', e)
+          })
+      })
     }
   },
+
   components: {
     ViewTableList,
     ViewTable,

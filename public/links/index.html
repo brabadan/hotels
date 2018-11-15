@@ -33,10 +33,25 @@
         >
             Hotels
         </button>
+        <button onclick="app.src='/test'"
+                title="Тестовая вкладка"
+        >
+            Test
+        </button>
     </div>
 </div>
 <div class="iframe-container">
     <iframe id="app" src="/pyatnashki" allowfullscreen></iframe>
 </div>
 </body>
+<footer>
+    <script src="isMobile.js"></script>
+    <script>
+        if (isMobile.phone) {
+            document.body.style.setProperty('--min-element-height', '10vmin')
+        } else if (isMobile.tablet) {
+            document.body.style.setProperty('--min-element-height', '5vmin')
+        }
+    </script>
+</footer>
 </html>

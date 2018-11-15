@@ -8,4 +8,5 @@ module.exports = function (app) {
     app.use('/qwest', express.static('public/qwest'));
     app.use('/tictactoe', express.static('public/tictactoe'));
     app.use('/hotel_admin', express.static('public/hotels'));
+    app.use('/test', express.static('public/test'));
 };

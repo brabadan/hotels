@@ -34,7 +34,8 @@ export default new Router({
     {
       path: '/table/:tableName/page/:page',
       name: 'table',
-      component: TablesView
+      component: TablesView,
+      props: true
     },
     {
       path: '/about',

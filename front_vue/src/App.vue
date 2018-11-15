@@ -12,10 +12,10 @@
             <router-link to="/about">About</router-link>
             |
             <router-link to="/login">Login</router-link>
-            <label v-if="this.$store.state.username"
+            <label v-if="this.$store.state.userName"
                    id="user"
             >
-                User: {{ this.$store.state.username }}
+                User: {{ this.$store.state.userName }}
                 <button v-on:click="logout">logout</button>
             </label>
         </div>
@@ -25,17 +25,28 @@
 </template>
 <script>
 import StatusBar from './components/StatusBar'
+import Vue from 'vue'
+
+console.dir(StatusBar)
 
 export default {
+  created () {
+    const tables = require('../../tables.json')
+    this.$store.state.tableList = tables
+    this.$store.state.tableList.forEach(table => { Vue.set(this.$store.state.newRow, table.name, {}) })
+    this.$store.dispatch('checkLogin')
+      .catch(e => {
+        console.error(e)
+      })
+  },
   methods: {
-    logout: function () {
+    logout () {
       this.$store.dispatch('logout')
     },
-    tableLink: function () {
+    tableLink () {
       const tableName = this.$store.state.currentTable.name || this.$store.state.tableList[0].name
       const page = this.$store.state.currentTable.curPage || 1
-      const link = `/table/${tableName}/page/${page}`
-      return link
+      return `/table/${tableName}/page/${page}`
     }
   },
   components: {

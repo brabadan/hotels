@@ -24,6 +24,8 @@ db.once('open', function () {
         resave: false,
         store: new MongoStore({mongooseConnection: db})
     }));
+    // Подключаем статику
+    require('./app/routes/static')(app);
     // Включаем Аутентификацию
     require('./middleware/Auth')(app, db);
     // Включаем маршруты

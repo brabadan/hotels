@@ -1,3 +1,7 @@
+:root {
+    --min-element-height: 4vmin;
+}
+
 div.menu-container {
     list-style: none;
     display: flex;
@@ -15,6 +19,8 @@ div.menu-container {
 
 button {
     margin-left: 1em;
+    min-height: var(--min-element-height);
+    font-size: calc(var(--min-element-height)/2);
 }
 
 .iframe-container {
