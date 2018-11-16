@@ -3,7 +3,7 @@ import Vue from 'vue'
 export default {
 
   setUser (state, userName) {
-    state.userName = userName
+    state.username = userName
   },
 
   // Записываем в state.currentTable новые данные
@@ -27,17 +27,16 @@ export default {
   },
 
   // Удалить картинку в строке редактирования таблицы
-  delNewRowImage (state, { imageId, columnName }) {
+  delNewRowImage (state, { columnName, imageId }) {
     const tableName = state.currentTable.name
     let images = state.newRow[tableName][columnName]
     // Если массив картинок - удаляем именно эту
     if (images instanceof Array) {
       images.splice(images.indexOf(imageId), 1)
-      // Иначе очищаем единственную запись
-    } else {
-      images = null
+      Object.assign(state.newRow[tableName][columnName], images)
+    } else { // Иначе очищаем единственную запись
+      state.newRow[tableName][columnName] = null
     }
-    Object.assign(state.newRow[tableName][columnName], images)
   },
 
   // Показать картинку в полный размер

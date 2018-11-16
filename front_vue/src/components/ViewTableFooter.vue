@@ -6,16 +6,16 @@
         <td v-for="column in getCurrentColumns()"
             v-bind:key="column.name"
         >
-            <!-- Поле только для чтения просто показываем без ввода -->
+            <!-- Если поле только для чтения просто показываем без ввода -->
             <span v-if="column.readonly">
                         {{ getNewRowField(column) }}
                     </span>
 
-            <!-- Поле-ссылка на ключ другой таблицы - делаем выбор по значеням соответств. таблицы-->
+            <!-- Иначе-если поле-ссылка на ключ другой таблицы - делаем выбор по значеням соответств. таблицы-->
             <div v-else-if="column.link">
                 <!-- Если массив картинок -->
-                <ViewLinkImages v-if="column.link.imageField && $store.state.newRow[getCurrentTable.name][column.name]"
-                                v-bind:images="column.linkList[$store.state.newRow[getCurrentTable.name][column.name]].image"
+                <ViewLinkImages v-if="column.link.imageField && getNewRow[column.name]"
+                                v-bind:images="column.linkList[getNewRow[column.name]].image"
                 >
                 </ViewLinkImages>
                 <select v-model="$store.state.newRow[getCurrentTable.name][column.name]">
@@ -28,13 +28,15 @@
                 </select>
             </div>
 
-            <!-- Поле Image -->
+            <!-- Иначе если поле Image -->
             <div v-else-if="column.type === 'image'"
                  class="image-list"
             >
                 <!-- При редактировании, показываем фотки только если не выбраны новые getFooterImageArr(column)-->
                 <div v-if="!imagesFiles[column.name] || imagesFiles[column.name].length === 0">
-                    <ViewLinkImages v-bind:images="$store.state.newRow[getCurrentTable.name][column.name]">
+                    <ViewLinkImages v-bind:images="getNewRow[column.name]"
+                                    v-bind:close-image="onCloseImage(column.name)"
+                    >
                     </ViewLinkImages>
                 </div>
                 <!-- Выбираем новые фотки -->
@@ -113,6 +115,14 @@ export default {
     ])
   },
   methods: {
+    // oncloseImage
+    onCloseImage (columnName) {
+      return (imageId) => {
+        this.$store.dispatch('delNewRowImage', { columnName, imageId })
+        console.log(columnName, imageId)
+      }
+    },
+
     // Возвращаем список полей текущей таблицы + готовим объект images
     getCurrentColumns () {
       for (let column of this.getCurrentTable.columns) {
@@ -296,19 +306,6 @@ export default {
     div.image
         display inline-block;
         position relative;
-
-    .image-close
-        position absolute
-        top 2px
-        right 2px
-        width 1em
-        height 1em
-        background bisque
-        opacity 0.4
-
-    .image-close:hover
-        opacity 1
-        cursor pointer
 
     div.image-list
         display table-caption

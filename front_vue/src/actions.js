@@ -24,12 +24,16 @@ export default {
     } else {
       request('POST', state.serverURL + 'login', user)
         .then(result => {
+          if (result.err) { // Если ошибка авторизации
+            commit('showStatusBar', `Неправильный логин или пароль: ${result.err}`)
+            return
+          }
           if (result.res && result.res.username) {
             commit('showStatusBar', `Успешная авториация: ${result.res.username}`)
             commit('setUser', result.res.username)
             this.dispatch('selectTable', state.currentTable.num)
           } else {
-            commit('showStatusBar', `Неизвестный ответ: ${result}`)
+            commit('showStatusBar', `Неизвестный ответ: ${JSON.parse(result)}`)
           }
         })
         .catch(e => {

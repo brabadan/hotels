@@ -1,11 +1,19 @@
 <template>
     <!-- Если массив картинок -->
     <div class="link-image-array">
-        <img v-for="(src, index) of getLinkImage()"
+        <div v-for="(imageId, index) of getLinkImage()"
              v-bind:key="index"
-             v-bind:src="'images/' + src"
-             v-on:click="$store.dispatch('viewImage', 'images/' + src)"
+             class="image"
         >
+            <div v-if="closeImage"
+                 class="image-close"
+                 v-on:click="closeImage(imageId)"
+            >X
+            </div>
+            <img v-bind:src="'images/' + imageId"
+                 v-on:click="$store.dispatch('viewImage', 'images/' + imageId)"
+            >
+        </div>
     </div>
 </template>
 
@@ -13,7 +21,8 @@
 export default {
   name: 'VueLinkImages',
   props: [
-    'images'
+    'images',
+    'closeImage'
   ],
   methods: {
     // Значение link-image
@@ -37,6 +46,11 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+
+    div.image
+        display inline-block;
+        position relative;
+
     img
         width: 5em
         height: 5em
@@ -44,4 +58,18 @@ export default {
 
     img:hover
         cursor move
+
+    .image-close
+        position absolute
+        top 2px
+        right 2px
+        width 1em
+        height 1em
+        background bisque
+        opacity 0.4
+
+    .image-close:hover
+        opacity 1
+        cursor pointer
+
 </style>

@@ -89,6 +89,11 @@
         "name": "images",
         "type": "image",
         "array": true
+      },
+      {
+        "name": "photo",
+        "type": "image",
+        "array": true
       }
     ]
   },
