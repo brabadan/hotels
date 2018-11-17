@@ -192,8 +192,9 @@ export default {
   },
 
   // Показать текст в Статусной строки
-  showStatusText ({ commit }, text) {
-    commit('showStatusBar', text)
+  showStatusBar ({ commit }, statusInfo) {
+    const statusText = statusInfo instanceof Object ? JSON.stringify(statusInfo) : statusInfo
+    commit('showStatusBar', statusText)
   },
 
   // Показать картинку в полный размер

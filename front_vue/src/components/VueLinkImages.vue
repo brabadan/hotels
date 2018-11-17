@@ -36,7 +36,7 @@ export default {
         if (images) return [images]
         return []
       } catch (e) {
-        this.$store.dispatch('showStatusText', e)
+        this.$store.dispatch('showStatusBar', e)
       }
       // }
       // return 'not found :('

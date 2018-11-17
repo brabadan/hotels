@@ -168,7 +168,7 @@ export default {
       }
       if (warning) {
         warning = 'Для загрузки изображений не подходят файлы: ' + warning
-        this.$store.dispatch('showStatusText', warning)
+        this.$store.dispatch('showStatusBar', warning)
       }
     },
 
@@ -194,7 +194,7 @@ export default {
       })
       // Если есть ошибки, показываем их и выходим
       if (err) {
-        return this.$store.dispatch('showStatusText', err)
+        return this.$store.dispatch('showStatusBar', err)
       }
 
       // Готовим данные для загрузки на сервер

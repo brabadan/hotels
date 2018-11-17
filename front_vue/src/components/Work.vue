@@ -19,6 +19,7 @@
                         <li v-for="room in $store.state.currentHotel.fullInfo.rooms"
                             v-bind:key="room._id"
                             v-on:click="roomId = room._id"
+                            v-bind:class="roomId === roo._id ? 'room-selected' : ''"
                         >
                             {{ room.room_number }}
                             <ViewLinkImages v-bind:images="room.images">
@@ -50,9 +51,16 @@ import ViewLinkImages from './VueLinkImages'
 
 export default {
   name: 'Work',
+  created () {
+    // Если не выбран отель, перенаправляем на выбор отеля
+    if (!this.$store.state.currentHotel.name) {
+      this.$store.dispatch('showStatusBar', 'Выберите отель для продолжения работы...')
+      this.$router.replace('/config')
+    }
+  },
   data () {
     return {
-      roomId: ''
+      roomId: '' // id выбранной комнаты. Для фильтрации и показа только предметов этой комнаты
     }
   },
   components: {
@@ -61,6 +69,7 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="stylus">
+    .room-selected
+        background-color aquamarine
 </style>

@@ -33,7 +33,7 @@ export default {
   mounted () {
     this.fetchData({ tableName: this.tableName, page: this.page })
       .catch(e => {
-        this.dispatch('showStatusText', e)
+        this.dispatch('showStatusBar', e)
       })
   },
 
@@ -41,7 +41,7 @@ export default {
     this.fetchData(to.params)
       .then(() => next())
       .catch(e => {
-        this.dispatch('showStatusText', e)
+        this.dispatch('showStatusBar', e)
         next(false)
       })
   },
@@ -63,15 +63,15 @@ export default {
         } else if (this.getCurrentTable.curPage !== page) {
           fetchPromise = this.$store.dispatch('selectPage', page)
         } else {
-          this.$store.dispatch('showStatusText', 'cant fetch data')
+          this.$store.dispatch('showStatusBar', 'cant fetch data')
             .catch(e => {
-              this.$store.dispatch('showStatusText', e)
+              this.$store.dispatch('showStatusBar', e)
             })
         }
         fetchPromise
           .then(() => resolve())
           .catch(e => {
-            this.$store.dispatch('showStatusText', e)
+            this.$store.dispatch('showStatusBar', e)
           })
       })
     }
