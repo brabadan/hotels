@@ -10,9 +10,11 @@
                  v-on:click="closeImage(imageId)"
             >X
             </div>
-            <img v-bind:src="'images/' + imageId"
+            <div class="image-zoom"
                  v-on:click="$store.dispatch('viewImage', 'images/' + imageId)"
-            >
+            >+
+            </div>
+            <img v-bind:src="'images/' + imageId">
         </div>
     </div>
 </template>
@@ -56,10 +58,7 @@ export default {
         height: 5em
         margin: 2px
 
-    img:hover
-        cursor move
-
-    .image-close
+    .image-close, .image-zoom
         position absolute
         top 2px
         right 2px
@@ -68,7 +67,10 @@ export default {
         background bisque
         opacity 0.4
 
-    .image-close:hover
+    .image-zoom
+        left: 2px
+
+    .image-close:hover, .image-zoom:hover
         opacity 1
         cursor pointer
 

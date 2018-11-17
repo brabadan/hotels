@@ -19,7 +19,7 @@
                         <li v-for="room in $store.state.currentHotel.fullInfo.rooms"
                             v-bind:key="room._id"
                             v-on:click="roomId = room._id"
-                            v-bind:class="roomId === roo._id ? 'room-selected' : ''"
+                            v-bind:class="roomId === room._id ? 'room-selected' : ''"
                         >
                             {{ room.room_number }}
                             <ViewLinkImages v-bind:images="room.images">
