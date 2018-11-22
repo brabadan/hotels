@@ -15,11 +15,12 @@
             <tbody>
             <tr>
                 <td>
-                    <ul>
+                    <ul class="work-room-list">
                         <li v-for="room in $store.state.currentHotel.fullInfo.rooms"
                             v-bind:key="room._id"
                             v-on:click="roomId = room._id"
                             v-bind:class="roomId === room._id ? 'room-selected' : ''"
+                            v-bind:title="room.about_room"
                         >
                             {{ room.room_number }}
                             <ViewLinkImages v-bind:images="room.images">
@@ -70,6 +71,15 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+    ul
+        padding: 1px;
+    li
+        list-style none
+    thead
+        background-color: antiquewhite;
+    .work-room-list li
+        border 1px solid grey
+        cursor pointer
     .room-selected
         background-color aquamarine
 </style>

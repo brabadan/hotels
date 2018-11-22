@@ -12,6 +12,7 @@
             </div>
             <div class="image-zoom"
                  v-on:click="$store.dispatch('viewImage', 'images/' + imageId)"
+                 title="увеличить"
             >+
             </div>
             <img v-bind:src="'images/' + imageId">
