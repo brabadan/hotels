@@ -1,2 +1,2 @@
 (window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["about"],{f820:function(e,t,n){"use strict";n.r(t);var s=function(){var e=this,t=e.$createElement;e._self._c;return e._m(0)},u=[function(){var e=this,t=e.$createElement,n=e._self._c||t;return n("div",{staticClass:"about"},[n("h1",[e._v("This is an about page for Hotels super-puper-app")])])}],a=n("2877"),o={},r=Object(a["a"])(o,s,u,!1,null,null,null);r.options.__file="About.vue";t["default"]=r.exports}}]);
-//# sourceMappingURL=about.b0ff3b1c.js.map
+//# sourceMappingURL=about.4aaf92cb.js.map
